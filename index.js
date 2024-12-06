@@ -8,10 +8,29 @@ let h = 800;
 screen.width = w;
 screen.height = h;
 let map_array = [
-        1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1,
-        0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1,
-        1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1,
+        0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 1, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
 ];
+
+
+let s = [
+	1, 1, 1, 0, 0, 1, 1, 1, 
+	1, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 0, 0, 0, 0, 1,
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0,
+	1, 0, 0, 0, 0, 0, 0, 1,
+	1, 0, 0, 0, 0, 0, 0, 1,
+	1, 1, 1, 0, 0, 1, 1, 1
+]
+
+map_array = s;
 
 let chunk_w = 8;
 let chunk_h = 8;
@@ -49,6 +68,8 @@ function load_chunks() {
                                 map_array
                         );
 
+			//well need to adjust this to do this for every single space in the render distance 
+			//and the subsequent stuff...
                         chunks.unshift(new_row);
                         chunk_offset[1] += 1;
                         world_dimensions[1] += 1;
@@ -96,20 +117,93 @@ function load_chunks() {
         return loadable_chunks;
 }
 
+let blue_counter = 0;
+
 function create_map() {
+
         for (let i = 0; i < loaded_chunks.length; i++) {
+
+		let render_side = (2 * render_dist + 1);
+		let load_x = i % render_side;
+		let load_y = Math.floor(i / render_side);
+	
+		
+		
+		//border chunk filter
+		let is_border_chunk = (load_x == 0 || load_y == 0 || load_x == render_side - 1 || load_y == render_side - 1);
+
+		let direction = null;
+
+
+		//we need to check the direction of the chunk to get the border walls of the chunk
+		//luckily the first render_side chunks are top chunks (with the first and last of the row being corner chunks)
+		//the last render side are the bottom chunks (again the first and last are corner chunks)
+		//and anything in between is a left and right chunk alternating
+		if(is_border_chunk){
+	
+			if(load_x == 0){
+				direction = "left"
+			}
+			if(load_x == render_side - 1){
+				direction = "right"
+			}
+			if(load_y == 0){
+				direction = "up"
+				if(load_x == 0){
+					direction = "up-left"
+				}
+				if(load_x == render_side - 1){
+					direction = "up-right"
+				}
+			}
+			if(load_y == render_side - 1){
+				direction = "down"
+				if(load_x == 0){
+					direction = "down-left"
+				}
+				if(load_x == render_side - 1){
+					direction = "down-right"
+				}
+			}
+
+		}
+
                 let map_array = loaded_chunks[i].info;
 
                 let offset = loaded_chunks[i].position;
                 for (let x = 0; x < chunk_w; x++) {
                         for (let y = 0; y < chunk_h; y++) {
+				
+
                                 let x_u = offset[0] * chunk_w + x;
                                 let y_u = offset[1] * chunk_h + y;
 
                                 let chunk_index = y * chunk_w + x;
                                 let chunk_block = map_array[chunk_index];
 
-                                if (chunk_block == 1) {
+				if(chunk_block == 1){	
+					color = "red"
+				}
+
+				let checks = {
+					"left" : x == 0,
+					"right" : x == chunk_w - 1,
+					"up" : y == 0,
+					"down" : y == chunk_h - 1,
+
+					"up-left" : x == 0 && y == 0,
+					"up-right" : x == 0 && y == chunk_h - 1,
+					"down-left" : x == 0 && y == chunk_h - 1,
+					"down-right" : x == chunk_w - 1 && y == chunk_h - 1,
+				}
+
+				let is_border_block = checks[direction] 
+				if(is_border_block && is_border_chunk){
+					color = "blue"
+				}
+
+				if(chunk_block != 0){
+
                                         let edge1 = [x_u, y_u, x_u + 1, y_u];
                                         let edge2 = [
                                                 x_u + 1,
@@ -124,15 +218,29 @@ function create_map() {
                                                 y_u + 1,
                                         ];
                                         let edge4 = [x_u, y_u + 1, x_u, y_u];
-                                        edges.push(edge1);
-                                        edges.push(edge2);
-                                        edges.push(edge3);
-                                        edges.push(edge4);
-                                }
+                                        edges.push({
+						color,
+						edge : edge1
+					});
+                                        edges.push({
+						color, 
+						edge : edge2
+					});
+                                        edges.push({
+						color, 
+						edge : edge3}
+					);
+                                        edges.push({
+						color, 
+						edge : edge4
+					});
+				}	
+
                         }
                 }
         }
 }
+
 
 function insertIntoSortedArray(sortedArray, value) {
         let left = 0;
@@ -286,7 +394,7 @@ function render_edges(edges) {
         let csx = cos(rot);
         let snx = sin(rot);
         for (let i = 0; i < edges.length; i++) {
-                let edge = edges[i];
+                let {edge, color} = edges[i];
 
                 let [lx, ly, rx, ry] = edge;
 
@@ -337,9 +445,10 @@ function render_edges(edges) {
                         data,
                         area,
                         face: edge,
+			color
                 });
         }
-        render.reverse().forEach(({ data }) => {
+        render.reverse().forEach(({ data, color }) => {
                 let [x_l, x_r, z_l, z_r] = data;
 
                 //fix this so all faces are rendered....
@@ -366,7 +475,7 @@ function render_edges(edges) {
                         ((x_l / z_l) * w) / 2 + w / 2,
                         h / 2 + ((1 / z_l / 2) * h) / 2
                 );
-                ctx.fillStyle = 'red';
+                ctx.fillStyle = color;
                 ctx.fill();
                 ctx.stroke();
         });
@@ -376,6 +485,9 @@ loaded_chunks = load_chunks();
 
 create_map();
 
+
+//console.log(blue_counter)
+
 let fps = 60;
 
 setInterval(() => {
@@ -383,4 +495,5 @@ setInterval(() => {
         ctx.clearRect(0, 0, w, h);
         walk();
         render_edges(edges);
+	//console.log(player_pos)
 }, 1000 / fps);
