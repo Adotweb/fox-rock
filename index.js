@@ -203,10 +203,10 @@ function create_map() {
 					"1dist" : x == chunk_w - 1 || y == chunk_h - 1 || x == 0 || y == 0
 				}
 				
-				let left_border = x_u == -render_dist * chunk_w 
-				let right_border = x_u == 2 * render_dist * chunk_w - 1
-				let top_border = y_u == -render_dist * chunk_h 
-				let bottom_border = y_u == 2 * render_dist * chunk_h - 1
+				let left_border = x_u == -render_dist * chunk_w + chunk_w * chunk_pos[0]
+				let right_border = x_u == 2 * render_dist * chunk_w - 1 + chunk_w * chunk_pos[0]
+				let top_border = y_u == -render_dist * chunk_h + chunk_h * chunk_pos[1]
+				let bottom_border = y_u == 2 * render_dist * chunk_h - 1 + chunk_h * chunk_pos[1]
 			
 				if(left_border){
 					edges.push({
