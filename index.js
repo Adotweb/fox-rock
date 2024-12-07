@@ -5,6 +5,8 @@ let ctx = screen.getContext('2d');
 let w = 800;
 let h = 800;
 
+
+
 screen.width = w;
 screen.height = h;
 let map_array = [
@@ -44,69 +46,63 @@ let chunk_coords = [0, 0];
 //one cell in every direction making for 8 adjacent tiles
 let render_dist = 1;
 
-//all chunks
-let chunks = new Array(3).fill(new Array(3).fill(map_array));
+let map_size = 100
 
-let world_dimensions = [3, 3];
+//all chunks
+let chunks = Array.from({ length: map_size }, () => new Array(map_size).fill(false));
+
+chunks[50][50] = map_array;
+
+let world_dimensions = [map_size, map_size];
 //this coordinate indicates where the 0, 0 chunk is stored in the chunks array
 //and changes whenever the player adds new rows/columns to the chunks (only on the top and left...)
-let chunk_offset = [1, 1];
+let chunk_offset = [Math.floor(map_size/2), Math.floor(map_size/2)];
 
 //8 chunks surrounding the player + 1 chunks where the player stands in so we dont have to draw the whole chunks array
 let loaded_chunks = [];
-
 //takes (and "generates") the chunks adjacent to the player
 //if no such chunks exist (i.e. at the border we generate the chunks)
+
+
+function random_chunk(){
+	return new Array(64).fill(0).map(s => Math.random() > .5 ? 0 : 1)
+}
+
+function generate_chunk(x, y){
+
+	let generated_chunk = random_chunk();
+
+	chunks[x][y] = generated_chunk;
+
+	return generated_chunk
+
+}
+
+function get_chunk(x, y){
+	if(chunks[x][y]){
+		return chunks[x][y]
+	}else{
+		console.log("new chunk")
+		return generate_chunk(x, y)
+	}
+}
+
 function load_chunks() {
         let loadable_chunks = [];
 
+
         for (let y = -render_dist; y <= render_dist; y++) {
-                let chunk_row_index = chunk_pos[1] + y + chunk_offset[1];
-
-                if (chunk_row_index <= 0) {
-                        let new_row = new Array(world_dimensions[0]).fill(
-                                map_array
-                        );
-
-			//well need to adjust this to do this for every single space in the render distance 
-			//and the subsequent stuff...
-                        chunks.unshift(new_row);
-                        chunk_offset[1] += 1;
-                        world_dimensions[1] += 1;
-                }
-                if (chunk_row_index >= world_dimensions[1]) {
-                        let new_row = new Array(world_dimensions[0]).fill(
-                                map_array
-                        );
-
-                        chunks.push(new_row);
-                        world_dimensions[1] += 1;
-                }
-
-                let row = chunks[chunk_row_index];
 
                 for (let x = -render_dist; x <= render_dist; x++) {
-                        let chunk_column_index =
-                                chunk_pos[0] + x + chunk_offset[0];
+			
+			let chunk_pos_in_world = [
+				x + chunk_offset[0] + chunk_pos[0],
+				y + chunk_pos[1] +  chunk_offset[1]
+			]
 
-                        if (chunk_column_index <= 0) {
-                                chunks.forEach((chunk, index) => {
-                                        chunks[index].unshift(map_array);
-                                });
+			let map_information = get_chunk(...chunk_pos_in_world);
 
-                                chunk_offset[0] += 1;
-                                world_dimensions[0] += 1;
-                        }
-                        if (chunk_column_index >= world_dimensions[0]) {
-                                chunks.forEach((chunk, index) => {
-                                        chunks[index].push(map_array);
-                                });
-
-                                world_dimensions[0] += 1;
-                        }
-                        let map_information = row[chunk_column_index];
-
-                        let chunk_info = {
+                       let chunk_info = {
                                 info: map_information,
                                 position: [x + chunk_pos[0], y + chunk_pos[1]],
                         };
@@ -331,12 +327,9 @@ function walk() {
                 player_pos[0] + speed * walk_dir[0],
                 player_pos[1] + speed * walk_dir[1],
         ];
-
         //to check for collision we first need to load in the data of the current chunk were in
-        let map_array =
-                chunks[chunk_pos[1] + chunk_offset[1]][
-                        chunk_pos[0] + chunk_offset[0]
-                ];
+        
+
 
         let ccx = player_pos[0] % chunk_w;
         let ccy = player_pos[1] % chunk_h;
@@ -346,9 +339,22 @@ function walk() {
 
         chunk_coords = [ccx, ccy];
 
+	chunk_pos = [
+		Math.floor(player_pos[0]/chunk_w),
+		Math.floor(player_pos[1]/chunk_h),
+
+	]
+
+	let map_array =
+                chunks[chunk_pos[0] + chunk_offset[0]][
+                        chunk_pos[1] + chunk_offset[1]
+                ];
+
         //then we check if the player hits something inside the current chunk
         //(relative to it)
-        let index = Math.floor(ccx) * chunk_w + Math.floor(ccy);
+        let index = Math.floor(ccy) * chunk_w + Math.floor(ccx);
+
+	if(ccx > 0)
 
         if (map_array[index] == 1) {
                 player_pos = prev_pos;
@@ -515,9 +521,7 @@ function render_edges(edges) {
 }
 
 loaded_chunks = load_chunks();
-
 create_map();
-
 
 //console.log(blue_counter)
 
