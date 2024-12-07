@@ -12,7 +12,7 @@ let map_array = [
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 1, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -20,17 +20,17 @@ let map_array = [
 
 
 let s = [
-	1, 1, 1, 0, 0, 1, 1, 1, 
-	1, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 1, 0, 0, 1, 1, 1, 
+	1, 0, 0, 0, 0, 0, 0, 0, 
 	1, 0, 0, 0, 0, 0, 0, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0,
 	1, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 1,
-	1, 1, 1, 0, 0, 1, 1, 1
+	0, 0, 0, 0, 0, 0, 0, 1,
+	1, 1, 1, 0, 0, 1, 0, 1
 ]
 
-map_array = s;
+//map_array = s;
 
 let chunk_w = 8;
 let chunk_h = 8;
@@ -166,6 +166,11 @@ function create_map() {
 				}
 			}
 
+			//in the case that the render distance is 0 all the borders of the chunk are borders
+			if(0 == render_side - 1){
+				direction = "1dist"
+			}
+
 		}
 
                 let map_array = loaded_chunks[i].info;
@@ -191,15 +196,34 @@ function create_map() {
 					"up" : y == 0,
 					"down" : y == chunk_h - 1,
 
-					"up-left" : x == 0 && y == 0,
-					"up-right" : x == 0 && y == chunk_h - 1,
-					"down-left" : x == 0 && y == chunk_h - 1,
-					"down-right" : x == chunk_w - 1 && y == chunk_h - 1,
+					"up-left" : x == 0 || y == 0,
+					"up-right" : x == chunk_w - 1 || y == 0,
+					"down-left" : x == 0 || y == chunk_h - 1,
+					"down-right" : x == chunk_w - 1 || y == chunk_h - 1,
+					"1dist" : x == chunk_w - 1 || y == chunk_h - 1 || x == 0 || y == 0
 				}
 
+				
+
+
 				let is_border_block = checks[direction] 
-				if(is_border_block && is_border_chunk){
+				if(is_border_block && is_border_chunk && chunk_block == 0){
+					
+					let faces = [
+						[x_u, y_u, x_u + 1, y_u],
+						[x_u + 1, y_u, x_u + 1, y_u + 1],
+						[x_u + 1, y_u + 1, x_u, y_u + 1],
+						[x_u, y_u + 1, x_u, y_u]
+					]
+
 					color = "blue"
+
+					faces.forEach(face => {
+						edges.push({
+							edge : face,
+							color
+						})
+					})
 				}
 
 				if(chunk_block != 0){
