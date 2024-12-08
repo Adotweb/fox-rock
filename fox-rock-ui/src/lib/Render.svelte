@@ -1,5 +1,7 @@
-
 <script>
+import { chunk_state, player_state } from "../state/game_state.js"
+
+let [get, update_player_state] = player_state;
 
 //provide the variables to later write the screen to
 let screen;
@@ -47,10 +49,16 @@ let render_dist = 1;
 
 let map_size = 100
 
-//all chunks
-let chunks = Array.from({ length: map_size }, () => new Array(map_size).fill(false));
+//all chunks 
+//we handle this outside of the actual game rendering so we can retreive the map data from outside of the rendering compoentn
+let [get_chunks, update_chunks] = chunk_state;
 
-chunks[50][50] = map_array;
+let chunks = get_chunks();
+
+update_chunks(() => {
+	chunks[50][50] = map_array;
+	return chunks
+})
 
 let world_dimensions = [map_size, map_size];
 
@@ -130,9 +138,11 @@ function generateWalkableChunk() {
 //is called when the chunks at x, y doesnt exist yet, we put it inside the chunks map when we created it
 function generate_chunk(x, y){
 
-	let generated_chunk = map_array//generateWalkableChunk();
-
-	chunks[x][y] = generated_chunk;
+	let generated_chunk = generateWalkableChunk();
+	update_chunks(chunks => {
+		chunks[x][y] = generated_chunk;
+		return chunks
+	})
 
 	return generated_chunk
 
@@ -141,8 +151,8 @@ function generate_chunk(x, y){
 //we need to check if the chunk exists before we can access it
 //if it doesnt we create it
 function get_chunk(x, y){
-	if(chunks[x][y]){
-		return chunks[x][y]
+	if(get_chunks()[x][y]){
+		return get_chunks()[x][y]
 	}else{
 		return generate_chunk(x, y)
 	}
@@ -392,6 +402,11 @@ function walk() {
                 direction[0] * sin(rot) + direction[1] * cos(rot),
         ];
 
+	//if no walking we dont need to update no positions
+	if(walk_dir[0] == 0 && walk_dir[1] == 0){
+		return
+	}
+
 	//the players updated position after adding the velocity vector
         player_pos = [
                 player_pos[0] + speed * walk_dir[0],
@@ -423,7 +438,7 @@ function walk() {
 
 	//this is the array of the current chunk we are in, needs to be loaded in to check if we stand inside of a wall
 	let map_array =
-                chunks[chunk_pos[0] + chunk_offset[0]][
+                get_chunks()[chunk_pos[0] + chunk_offset[0]][
                         chunk_pos[1] + chunk_offset[1]
                 ];
 
@@ -437,6 +452,15 @@ function walk() {
                 return;
         }
 
+	update_player_state(state => {
+		state.offset = chunk_offset;
+
+		state.chunk_pos = chunk_pos;
+		state.chunk_coords = chunk_coords;
+		state.player_pos = player_pos
+
+		return state
+	})	
 
         loaded_chunks = load_chunks();
         edges = [];
@@ -465,7 +489,6 @@ function onkeydown(e){
                 direction[1] = -1;
         }
         if (key == 'd') {
-	console.log("hello")
                 direction[0] = 1;
         }
 }
@@ -623,7 +646,5 @@ onMount(() => {
 //console.log(blue_counter)
 </script>
 
-
-//the events need to be registered on the very top in the DOM
-<svelte:window {onkeydown} {onkeyup}>
+<svelte:window {onkeydown} {onkeyup}></svelte:window>
 <canvas  bind:this={screen} style="border:1px solid black;" width={w} height={h}></canvas>
