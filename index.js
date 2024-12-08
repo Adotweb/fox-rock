@@ -339,11 +339,16 @@ function walk() {
 
         chunk_coords = [ccx, ccy];
 
+	let prev_chunk_pos = chunk_pos;
+
+
+
 	chunk_pos = [
 		Math.floor(player_pos[0]/chunk_w),
 		Math.floor(player_pos[1]/chunk_h),
-
 	]
+
+
 
 	let map_array =
                 chunks[chunk_pos[0] + chunk_offset[0]][
@@ -354,27 +359,19 @@ function walk() {
         //(relative to it)
         let index = Math.floor(ccy) * chunk_w + Math.floor(ccx);
 
-	if(ccx > 0)
 
         if (map_array[index] == 1) {
                 player_pos = prev_pos;
                 return;
         }
-
-        let new_chunk_pos = [
-                Math.floor(player_pos[0] / chunk_w),
-                Math.floor(player_pos[1] / chunk_h),
-        ];
-
         if (
-                chunk_pos[0] == new_chunk_pos[0] &&
-                chunk_pos[1] == new_chunk_pos[1]
+                chunk_pos[0] == prev_chunk_pos[0] &&
+                chunk_pos[1] == prev_chunk_pos[1]
         ) {
+		chunk_pos = prev_chunk_pos;
                 return;
-                chunk_pos = new_chunk_pos;
         }
 
-        chunk_pos = new_chunk_pos;
 
         loaded_chunks = load_chunks();
         edges = [];
