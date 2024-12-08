@@ -8,5 +8,4 @@ import HUD from "./lib/HUD.svelte"
 	
 	<Render></Render>
 
-	<HUD></HUD>
 </main>

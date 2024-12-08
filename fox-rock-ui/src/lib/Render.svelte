@@ -54,14 +54,10 @@ let map_size = 100
 
 //all chunks 
 //we handle this outside of the actual game rendering so we can retreive the map data from outside of the rendering compoentn
-let [get_chunks, update_chunks] = chunk_state;
 
-let chunks = get_chunks();
+let chunks = Array.from({length : 100}, () => new Array(100).fill(false));
 
-update_chunks(() => {
-	chunks[50][50] = map_array;
-	return chunks
-})
+chunks[50][50] = map_array;
 
 let world_dimensions = [map_size, map_size];
 
@@ -142,10 +138,7 @@ function generateWalkableChunk() {
 function generate_chunk(x, y){
 
 	let generated_chunk = generateWalkableChunk();
-	update_chunks(chunks => {
-		chunks[x][y] = generated_chunk;
-		return chunks
-	})
+	chunks[x][y] = generated_chunk;
 
 	return generated_chunk
 
@@ -154,8 +147,8 @@ function generate_chunk(x, y){
 //we need to check if the chunk exists before we can access it
 //if it doesnt we create it
 function get_chunk(x, y){
-	if(get_chunks()[x][y]){
-		return get_chunks()[x][y]
+	if(chunks[x][y]){
+		return chunks[x][y]
 	}else{
 		return generate_chunk(x, y)
 	}
@@ -455,7 +448,7 @@ function walk() {
 
 	//this is the array of the current chunk we are in, needs to be loaded in to check if we stand inside of a wall
 	let map_array =
-                get_chunks()[chunk_pos[0] + chunk_offset[0]][
+                chunks[chunk_pos[0] + chunk_offset[0]][
                         chunk_pos[1] + chunk_offset[1]
                 ];
 
@@ -463,8 +456,18 @@ function walk() {
         //(relative to it)
         let index = Math.floor(ccy) * chunk_w + Math.floor(ccx);
 
+	let threshhold = 0
+
+	let index_left = Math.floor(ccy) * chunk_w + Math.floor(ccx + threshhold);
+	let index_right = Math.floor(ccy) * chunk_w + Math.floor(ccx - threshhold);
+	let index_up = Math.floor(ccy - threshhold) * chunk_w + Math.floor(ccx);
+	let index_down = Math.floor(ccy + threshhold) * chunk_w + Math.floor(ccx);
+
 	//when the index of the players position returns a wall then we need to reset the players position
-        if (map_array[index] == 1) {
+        if (map_array[index_left] == 1 ||
+	    map_array[index_right] == 1 || 
+	    map_array[index_down] == 1 ||
+	    map_array[index_up] == 1 ) {
                 player_pos = prev_pos;
                 return;
         }
