@@ -7,6 +7,9 @@ let [get, update_player_state] = player_state;
 let screen;
 let ctx;
 
+let mini_map;
+let mini_map_ctx;
+
 let w = 800;
 let h = 800;
 
@@ -325,6 +328,18 @@ function create_map() {
                                                 y_u + 1,
                                         ];
                                         let edge4 = [x_u, y_u + 1, x_u, y_u];
+
+
+
+
+					mini_map_squares.push([
+						[x_u, y_u],
+						[x_u + 1, y_u],
+						[x_u + 1, y_u + 1],
+						[x_u, y_u + 1]	
+					])
+
+
                                         edges.push({
 						color,
 						edge : edge1
@@ -346,6 +361,7 @@ function create_map() {
                         }
                 }
         }
+
 }
 
 
@@ -392,6 +408,7 @@ let sin = (x) => Math.sin(x);
 
 function walk() {
         rot = rot - ((rot_dir * Math.PI) / 180) * rot_speed;
+
 
 	//we store the players previous position so we can reset it if the player collides with a wall (so we dont move beyond a wall)
         let prev_pos = player_pos;
@@ -461,6 +478,11 @@ function walk() {
 
 		return state
 	})	
+		
+	//we only need to overwrite the mini-map when we move	
+	mini_map_ctx.clearRect(0, 0, w, h);
+
+	mini_map_squares = []	
 
         loaded_chunks = load_chunks();
         edges = [];
@@ -585,8 +607,9 @@ function render_edges(edges) {
         render.reverse().forEach(({ data, color }) => {
                 let [x_l, x_r, z_l, z_r] = data;
 
-                //fix this so all faces are rendered....
 
+
+		
                 ctx.beginPath();
                 ctx.moveTo(
                         ((x_l / z_l) * w) / 2 + w / 2,
@@ -615,6 +638,64 @@ function render_edges(edges) {
         });
 }
 
+let mini_map_w = 300
+let mini_map_h = 300
+
+let mini_map_dimensions = [
+	mini_map_w, 
+	mini_map_h
+]
+
+let mini_map_squares = [];
+
+function render_mini_map(){
+
+	mini_map_ctx.clearRect(0, 0, mini_map_w, mini_map_h)
+
+	mini_map_squares.forEach(mini_map_square)	
+
+
+	mini_map_ctx.beginPath();
+  	mini_map_ctx.arc(mini_map_w/2, mini_map_h/2, 5, 0, 2 * Math.PI, true);
+  	mini_map_ctx.fillStyle = "green"
+  	mini_map_ctx.fill();
+}
+
+function mini_map_square(square){ 
+
+
+	let csx = cos(rot);
+	let snx = sin(rot)
+
+	square = square.map(([x, y]) => {
+
+		let [rel_x, rel_y] = [x - player_pos[0], y - player_pos[1]];
+
+		let [sz, sx] = [
+			rel_x * csx + rel_y * snx,
+			rel_x * -snx + rel_y * csx
+		]
+
+
+		return [sz/10 * mini_map_w/2 + mini_map_w/2, -sx/10 * mini_map_w/2 + mini_map_w/2]	
+	})
+
+	let [p1, p2, p3, p4] = square;
+
+	mini_map_ctx.beginPath();
+
+	mini_map_ctx.moveTo(...p1)
+	mini_map_ctx.lineTo(...p2)
+	mini_map_ctx.lineTo(...p3)
+	mini_map_ctx.lineTo(...p4)
+	mini_map_ctx.lineTo(...p1)
+
+	mini_map_ctx.fillStyle = "red"
+	mini_map_ctx.fill()
+	mini_map_ctx.stroke()
+	
+}
+
 import {onMount} from "svelte";
 
 let fps = 60;
@@ -622,11 +703,12 @@ let fps = 60;
 //initialize the chunks and map
 onMount(() => {
 	ctx = screen.getContext('2d');
-	
+	mini_map_ctx = mini_map.getContext("2d")
 
 	loaded_chunks = load_chunks();
 	create_map();
 
+	
 
 	//main game loop
 	//1. create empty buffer to write screen data to 
@@ -637,14 +719,35 @@ onMount(() => {
 	setInterval(() => {
         	render = [];
         	ctx.clearRect(0, 0, w, h);
+		
+		//mini_map_ctx.clearRect(0, 0, mini_map_w, mini_map_h)
+
         	walk();
         	render_edges(edges);
-		//console.log(player_pos)
+		render_mini_map();
 	}, 1000 / fps);
 
 })
 //console.log(blue_counter)
 </script>
 
+<style>
+
+.mini-map{
+	position:absolute;
+	top:10px;
+	right:10px;
+	background-color: white;
+	height: 300px;
+	width:300px;
+	border-radius: 50%;
+	border : 1px solid black;
+}
+
+</style>
+
 <svelte:window {onkeydown} {onkeyup}></svelte:window>
+
+<canvas class="mini-map" bind:this={mini_map} width={mini_map_dimensions[0]} height={mini_map_dimensions[1]}></canvas>
+
 <canvas  bind:this={screen} style="border:1px solid black;" width={w} height={h}></canvas>
