@@ -1,5 +1,5 @@
 <script>
-import { chunk_state, player_state } from "../state/game_state.js"
+import { chunk_state, player_state, entity_state } from "../state/game_state.js"
 
 let [get, update_player_state] = player_state;
 
@@ -55,9 +55,12 @@ let map_size = 100
 //all chunks 
 //we handle this outside of the actual game rendering so we can retreive the map data from outside of the rendering compoentn
 
-let chunks = Array.from({length : 100}, () => new Array(100).fill(false));
+let [get_chunks, update_chunks] = chunk_state;
 
-chunks[50][50] = map_array;
+let chunks = get_chunks();
+
+
+update_chunks(chunks => chunks[50][50] = map_array)
 
 let world_dimensions = [map_size, map_size];
 
@@ -138,7 +141,7 @@ function generateWalkableChunk() {
 function generate_chunk(x, y){
 
 	let generated_chunk = generateWalkableChunk();
-	chunks[x][y] = generated_chunk;
+	update_chunks(chunks => chunks[x][y] = generated_chunk)
 
 	return generated_chunk
 
@@ -147,8 +150,8 @@ function generate_chunk(x, y){
 //we need to check if the chunk exists before we can access it
 //if it doesnt we create it
 function get_chunk(x, y){
-	if(chunks[x][y]){
-		return chunks[x][y]
+	if(get_chunks()[x][y]){
+		return get_chunks()[x][y]
 	}else{
 		return generate_chunk(x, y)
 	}
@@ -448,7 +451,7 @@ function walk() {
 
 	//this is the array of the current chunk we are in, needs to be loaded in to check if we stand inside of a wall
 	let map_array =
-                chunks[chunk_pos[0] + chunk_offset[0]][
+                get_chunks()[chunk_pos[0] + chunk_offset[0]][
                         chunk_pos[1] + chunk_offset[1]
                 ];
 
@@ -471,16 +474,6 @@ function walk() {
                 player_pos = prev_pos;
                 return;
         }
-
-	update_player_state(state => {
-		state.offset = chunk_offset;
-
-		state.chunk_pos = chunk_pos;
-		state.chunk_coords = chunk_coords;
-		state.player_pos = player_pos
-
-		return state
-	})	
 		
 	//we only need to overwrite the mini-map when we move	
 	mini_map_ctx.clearRect(0, 0, w, h);
@@ -490,6 +483,14 @@ function walk() {
         loaded_chunks = load_chunks();
         edges = [];
         create_map();
+
+	
+	update_player_state(player => {
+		player.rot = rot;
+		player.pos = player_pos;
+		player.chunk_pos = chunk_pos;
+		player.chunk_coords = chunk_coords
+	})
 }
 
 
@@ -699,6 +700,9 @@ function mini_map_square(square){
 	
 }
 
+
+let [get_entity_state, update_entity_state] = entity_state;
+
 import {onMount} from "svelte";
 
 let fps = 60;
@@ -728,6 +732,10 @@ onMount(() => {
         	walk();
         	render_edges(edges);
 		render_mini_map();
+		
+		update_entity_state({
+			player_pos
+		})
 	}, 1000 / fps);
 
 })
