@@ -398,6 +398,7 @@ let rot_speed = 3;
 let rot_dir = 0;
 let view_cone_slope = 1;
 
+let order = 0;
 
 let cos = (x) => Math.cos(x);
 let sin = (x) => Math.sin(x);
@@ -482,7 +483,6 @@ function walk() {
         }
 		
 	//we only need to overwrite the mini-map when we move	
-	mini_map_ctx.clearRect(0, 0, w, h);
 
 	mini_map_squares = []	
 
@@ -614,8 +614,7 @@ function render_edges(edges) {
 			type : "map"
                 });
         }
-        render.reverse().forEach(({ data, color, type }) => {
-
+        render.reverse().forEach(({ data, color, type, depth}) => {
 
 		if(type == "entity")	{
 			//in the case the object is an entity we use the entities render logic
@@ -735,19 +734,21 @@ onMount(() => {
 	//4. render the edges
 
 	setInterval(() => {
+		order = 0;
         	render = [];
-        	ctx.clearRect(0, 0, w, h);	
-		
+        	ctx.clearRect(0, 0, w, h);		
+		mini_map_ctx.clearRect(0, 0, w, h);
+
+
+		render_mini_map();
 		update_entity_state({
 			player_pos,
 			player_rot_trig : [csx, snx]
 		}, render)
 
+
         	walk();
         	render_edges(edges);
-		render_mini_map();
-		
-
 
 	}, 1000 / fps);
 
