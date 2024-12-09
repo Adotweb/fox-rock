@@ -8,6 +8,7 @@ export class Ghoul extends Entity {
 		this.rot = start_rot || 0;
 
 		this.speed = speed
+		this.depth = 0;
 	}
 
 	update(update_info){
@@ -24,6 +25,12 @@ export class Ghoul extends Entity {
 			this.pos[1] + direction_to_player[1] * this.speed
 		]	
 
-		console.log(this.pos, player_pos)
+		this.depth = Math.sqrt(direction_to_player[0]**2 + direction_to_player[1] ** 2)
+
+	}
+
+
+	render(ctx, mini_map_ctx){
+
 	}
 }

@@ -368,11 +368,11 @@ function insertIntoSortedArray(sortedArray, value) {
         // Perform binary search to find the insertion point
         while (left <= right) {
                 const mid = Math.floor((left + right) / 2);
-                if (sortedArray[mid].area === value.area) {
+                if (sortedArray[mid].depth === value.depth) {
                         // If the value already exists, insert it at the same position
                         left = mid;
                         break;
-                } else if (sortedArray[mid].area <= value.area) {
+                } else if (sortedArray[mid].depth <= value.depth) {
                         left = mid + 1;
                 } else {
                         right = mid - 1;
@@ -595,7 +595,7 @@ function render_edges(edges) {
                         continue;
                 }
 
-                let area = (z_l + z_r) / 2;
+                let depth = (z_l + z_r) / 2;
 
                 let data = [x_l, x_r, z_l, z_r];
 
@@ -603,17 +603,22 @@ function render_edges(edges) {
 		//inserts the edge according to its midpoint depth (allows us to draw them in reverse order for an easy painters algorithm)
                 render = insertIntoSortedArray(render, {
                         data,
-                        area,
-                        face: edge,
-			color
+			depth,
+			color,
+			type : "map"
                 });
         }
-        render.reverse().forEach(({ data, color }) => {
+        render.reverse().forEach(({ data, color, type }) => {
+
+
+		if(type == "entity")	{
+			//in the case the object is an entity we use the entities render logic
+			data.render(ctx, mini_map_ctx)
+			return
+		}
+
                 let [x_l, x_r, z_l, z_r] = data;
-
-
-
-		
+		//rendering walls or blocks	
                 ctx.beginPath();
                 ctx.moveTo(
                         ((x_l / z_l) * w) / 2 + w / 2,
@@ -725,17 +730,18 @@ onMount(() => {
 
 	setInterval(() => {
         	render = [];
-        	ctx.clearRect(0, 0, w, h);
+        	ctx.clearRect(0, 0, w, h);	
 		
-		//mini_map_ctx.clearRect(0, 0, mini_map_w, mini_map_h)
+		update_entity_state({
+			player_pos,
+		}, render)
 
         	walk();
         	render_edges(edges);
 		render_mini_map();
 		
-		update_entity_state({
-			player_pos
-		})
+
+
 	}, 1000 / fps);
 
 })

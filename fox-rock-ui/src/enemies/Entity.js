@@ -3,6 +3,8 @@ export class Entity {
 		this.pos = start_pos;
 		this.rot = start_rot;
 		this.speed = speed;
+		this.depth = 0;
+		this.type = "entity"
 	}
 
 
@@ -15,5 +17,10 @@ export class Entity {
 			pos : this.pos,
 			rot : this.rot
 		}
+	}
+
+
+	render(ctx, mini_map_ctx){
+
 	}
 }
