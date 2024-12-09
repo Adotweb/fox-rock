@@ -95,5 +95,5 @@ export let chunk_state = create_chunk_state(100);
 
 
 export let entity_state = create_entity_state([
-	new Ghoul([0, 0], 0, 0.1)
+
 ]);

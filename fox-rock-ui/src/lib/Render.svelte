@@ -402,6 +402,9 @@ let view_cone_slope = 1;
 let cos = (x) => Math.cos(x);
 let sin = (x) => Math.sin(x);
 
+let snx = 0;
+let csx = 1;
+
 function walk() {
         rot = rot - ((rot_dir * Math.PI) / 180) * rot_speed;
 
@@ -409,10 +412,13 @@ function walk() {
 	//we store the players previous position so we can reset it if the player collides with a wall (so we dont move beyond a wall)
         let prev_pos = player_pos;
 
+	snx = sin(rot)
+	csx = cos(rot)
+
 	//we need to rotate the velocity vector  to the view direction
         let walk_dir = [
-                direction[0] * cos(rot) + direction[1] * -sin(rot),
-                direction[0] * sin(rot) + direction[1] * cos(rot),
+                direction[0] * csx + direction[1] * -snx,
+                direction[0] * snx + direction[1] * csx,
         ];
 
 	//if no walking we dont need to update no positions
@@ -734,6 +740,7 @@ onMount(() => {
 		
 		update_entity_state({
 			player_pos,
+			player_rot_trig : [csx, snx]
 		}, render)
 
         	walk();
