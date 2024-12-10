@@ -38,6 +38,11 @@ export class Ghoul extends Entity {
 		let direction_mag = Math.sqrt(direction_to_player[0]**2 + direction_to_player[1]**2)
 
 
+		if(direction_mag < 0.5){
+			this.delete()
+		}
+	
+
 		let pos = [
 			this.pos[0] + direction_to_player[0]/direction_mag/100 * this.speed,
 			this.pos[1] + direction_to_player[1]/direction_mag/100 * this.speed
@@ -60,7 +65,13 @@ export class Ghoul extends Entity {
 			}
 
 			let distance = (this.pos[0] - entity.pos[0])**2 + (this.pos[1] - entity.pos[1])**2
-			console.log(`distance from ${this.id}, ${this.name} to ${entity.id}, ${entity.name} is ${distance}`);
+			if(entity.name == "bullet"){
+				if(distance < 0.5){
+					this.delete()
+					entity.delete()
+				}		
+			}	
+
 		})
 	}
 

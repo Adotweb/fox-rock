@@ -1,4 +1,5 @@
 <script>
+        import { Bullet } from "../enemies/bullet.js";
 import { chunk_state, player_state, entity_state } from "../state/game_state.js"
 
 let [get, update_player_state] = player_state;
@@ -396,7 +397,6 @@ let speed = 0.05;
 let rot = 0;
 let rot_speed = 3;
 let rot_dir = 0;
-let view_cone_slope = 1;
 
 let order = 0;
 
@@ -523,6 +523,9 @@ function onkeydown(e){
         if (key == 'd') {
                 direction[0] = 1;
         }
+	if(key == " "){
+		entity_state.register_entity(new Bullet(player_pos, [csx, snx]))	
+	}
 }
 
 //reacts to keyup events to reset the given directional input
@@ -744,7 +747,8 @@ onMount(() => {
 		render_mini_map();
 		update_entity_state({
 			player_pos,
-			player_rot_trig : [csx, snx]
+			player_rot_trig : [csx, snx],
+			map_data : chunks
 		}, render)
 
 

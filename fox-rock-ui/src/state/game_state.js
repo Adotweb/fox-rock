@@ -53,5 +53,4 @@ export let entity_state = EntityList();
 
 
 entity_state.register_entity(new Ghoul([4, 4], 0, 1))
-
 //entity_state.register_entity(new Zombie([5, 5]))

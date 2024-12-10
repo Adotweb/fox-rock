@@ -7,6 +7,7 @@ export class Entity {
 		this.type = "entity"
 		this.id = crypto.randomUUID();
 		this.name = "entity"
+		this.entity_list = this.entity_list
 	}
 
 
@@ -23,7 +24,15 @@ export class Entity {
 
 
 	register_to(entity_list){
+		this.entity_list = entity_list;
 		entity_list.push(this)
+	}
+
+	delete(){
+		const index = this.entity_list.findIndex(item => item.id == this.id);
+		if(index !== -1){
+			this.entity_list.splice(index, 1)
+		}
 	}
 
 	render(ctx, mini_map_ctx){
