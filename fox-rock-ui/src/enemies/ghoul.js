@@ -2,7 +2,10 @@ import { Entity } from "./Entity"
 
 	
 export class Ghoul extends Entity {
-	super(start_pos, start_rot, speed){
+
+	constructor(start_pos, start_rot, speed){
+		super(start_pos, start_rot, speed)
+
 		this.pos = start_pos || [0, 0];
 			
 		this.rot = start_rot || 0;
@@ -11,7 +14,12 @@ export class Ghoul extends Entity {
 
 		this.speed = 1
 		this.depth = 0;
+
+		this.image = new Image();
+
+		this.src = "/public/ghoul.png"
 	}
+
 
 	update(update_info){
 

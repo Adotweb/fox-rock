@@ -5,6 +5,7 @@ export class Entity {
 		this.speed = speed;
 		this.depth = 0;
 		this.type = "entity"
+		this.id = crypto.randomUUID();
 	}
 
 
