@@ -6,6 +6,8 @@ export class Ghoul extends Entity {
 	constructor(start_pos, start_rot, speed){
 		super(start_pos, start_rot, speed)
 
+		
+
 		this.pos = start_pos || [0, 0];
 			
 		this.rot = start_rot || 0;

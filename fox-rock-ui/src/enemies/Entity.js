@@ -21,6 +21,10 @@ export class Entity {
 	}
 
 
+	register_to(entity_list){
+		entity_list.push(this)
+	}
+
 	render(ctx, mini_map_ctx){
 
 	}

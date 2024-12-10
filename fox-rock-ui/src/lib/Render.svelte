@@ -711,7 +711,8 @@ function mini_map_square(square){
 }
 
 
-let [get_entity_state, update_entity_state] = entity_state;
+
+let { update_entity_state } = entity_state
 
 import {onMount} from "svelte";
 
