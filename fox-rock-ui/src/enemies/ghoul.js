@@ -6,7 +6,7 @@ export class Ghoul extends Entity {
 	constructor(start_pos, start_rot, speed){
 		super(start_pos, start_rot, speed)
 
-		
+		this.name = "ghoul"	
 
 		this.pos = start_pos || [0, 0];
 			
@@ -50,6 +50,18 @@ export class Ghoul extends Entity {
 
 
 		this.depth = -this.rel_pos[1];
+
+		//other_entities can be used to compute distances and relationships to other entities (collision for example)
+		let { other_entities } = update_info;
+	
+		other_entities.forEach(entity => {
+			if(entity.id == this.id){
+				return
+			}
+
+			let distance = (this.pos[0] - entity.pos[0])**2 + (this.pos[1] - entity.pos[1])**2
+			console.log(`distance from ${this.id}, ${this.name} to ${entity.id}, ${entity.name} is ${distance}`);
+		})
 	}
 
 

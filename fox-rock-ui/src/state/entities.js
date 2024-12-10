@@ -28,7 +28,7 @@ export function EntityList(){
 
 	function update_entity_state(update_info, render_order){
 		list.forEach(entity => {	
-			entity.update(update_info)
+			entity.update({...update_info, other_entities : list})
 			render_order = insertIntoSortedArray(render_order, {
 				data : entity,
 				...entity

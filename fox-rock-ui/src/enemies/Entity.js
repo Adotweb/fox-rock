@@ -6,6 +6,7 @@ export class Entity {
 		this.depth = 0;
 		this.type = "entity"
 		this.id = crypto.randomUUID();
+		this.name = "entity"
 	}
 
 
