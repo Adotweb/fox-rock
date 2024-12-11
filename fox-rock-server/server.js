@@ -44,6 +44,5 @@ wss.on("connection", (socket) => {
 const updates_per_second = 40
 
 setInterval(() => {
-
-
+	game_state.update()
 }, 1000/updates_per_second)

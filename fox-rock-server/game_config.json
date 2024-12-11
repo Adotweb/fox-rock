@@ -1,0 +1,8 @@
+{
+	"chunk_width": 8,
+	"chunk_height" : 8,
+	"map_size_width" : 100,
+	"map_size_height" : 100,
+	"map_offset_x" : 50,
+	"map_offset_y": 50
+}
