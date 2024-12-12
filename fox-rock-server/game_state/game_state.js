@@ -46,6 +46,12 @@ class GameState{
 			console.error("there is no player with the id ", player_id, " registered at the time!")
 		}
 	}
+
+	serialize(){
+		return {
+			entities : this.entities.serialize()
+		}
+	}
 }
 
 

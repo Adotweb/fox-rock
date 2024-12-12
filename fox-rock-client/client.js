@@ -12,7 +12,6 @@ let direction = [0, 0];
 let rot_dir = 0
 
 document.addEventListener("keydown", (e) => {
-	console.log(e.key)
 	if(e.key == "w"){
 		direction[1] = -1;
 	}
@@ -64,3 +63,11 @@ document.addEventListener("keyup", (e) => {
 	send_update({input})
 })
 
+
+ws_connection.onmessage = proto => {
+	let data = JSON.parse(proto.data)
+
+	data.entities.forEach(entity => {
+		console.log(entity.name, entity.position)
+	})
+}

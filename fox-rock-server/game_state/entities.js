@@ -21,11 +21,16 @@ function EntityList(){
 		return list
 	}
 
+	function serialize(){
+		return list.map(entity => entity.serialize())
+	}
+
 
 	return {
 		register_entity, 
 		register_entity_list,
-		get_list
+		get_list,
+		serialize
 	}
 }
 
@@ -81,7 +86,18 @@ class Entity {
 			this.position[1] + this.direction[1] * this.speed
 		]
 		
-		console.log(this.position)	
+	}
+
+	serialize(){
+		return {
+			position : this.position,
+			chunks_coords : this.in_chunk_coords,
+			chunk_pos : this.chunk_position,
+			rotation : this.rotation,
+			type : this.type,
+			name : this.name,
+			id : this.id
+		}
 	}
 
 }

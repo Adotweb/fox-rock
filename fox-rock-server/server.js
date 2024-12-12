@@ -11,6 +11,15 @@ const connections = new Map();
 
 const game_state = new GameState();
 
+function broad_cast(message){
+
+	[...connections.values()].forEach(socket => {
+	
+		socket.send(JSON.stringify(message))
+
+	})
+	
+}
 
 wss.on("connection", (socket) => {
 
@@ -56,4 +65,7 @@ const updates_per_second = 40
 
 setInterval(() => {
 	game_state.update()
+	
+	broad_cast(game_state.serialize())
+
 }, 1000/updates_per_second)
