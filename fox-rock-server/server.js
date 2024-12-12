@@ -38,9 +38,8 @@ wss.on("connection", (socket) => {
 
 	socket.send(JSON.stringify({
 		type : "initialize",
-		data : {
-			world_map
-		}
+		world_map,
+		player_id : socket.socket_id
 	}))
 
 	socket.on("close", () => {	
@@ -53,6 +52,8 @@ wss.on("connection", (socket) => {
 		const data = JSON.parse(proto.toString())
 
 		let { type } = data;
+		
+		console.log("Hello")
 
 		if(type == "update"){
 			let { input } = data;
