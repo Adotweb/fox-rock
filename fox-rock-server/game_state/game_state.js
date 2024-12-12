@@ -10,13 +10,13 @@ class GameState{
 
 	update(){
 		//updates every entity with the information about the other entities
-		this.entities.forEach(entity => {
-			entity.update(this.entities)
+		this.entities.get_list().forEach(entity => {
+			entity.update(this.entities.get_list())
 		})
 	}
 
 	player_input(player_id, input){
-		let player = this.entities.filter(entity => entity.id == player_id);
+		let player = this.entities.get_list().filter(entity => entity.id == player_id);
 
 		if(player.length !== 0){
 			player = player[0]
@@ -38,7 +38,7 @@ class GameState{
 	}
 
 	player_logout(player_id){
-		let found_player = this.entities.filter(entity => entity.id == player_id);
+		let found_player = this.entities.get_list().filter(entity => entity.id == player_id);
 		
 		if(found_player.length !== 0){
 			found_player[0].destroy()

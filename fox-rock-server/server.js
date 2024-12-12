@@ -2,6 +2,7 @@ const { WebSocketServer } = require("ws");
 const { GameState } = require("./game_state/game_state");
 const { world_map } = require("./map/map");
 
+const crypto = require("crypto")
 
 const wss = new WebSocketServer({ port : 3000 });
 
@@ -21,6 +22,8 @@ wss.on("connection", (socket) => {
 
 	connections.set(socket_id, socket)
 
+
+	game_state.player_login(socket_id)
 	socket.socket_id = socket_id;	
 
 
@@ -32,12 +35,20 @@ wss.on("connection", (socket) => {
 	}))
 
 	socket.on("close", () => {	
+		game_state.player_logout(socket.socket_id)
 		connections.delete(socket.socket_id);
 	})
 
 	socket.on("message", proto => {
 
 		const data = JSON.parse(proto.toString())
+
+		let { type } = data;
+
+		if(type == "update"){
+			let { input } = data;
+			game_state.player_input(socket.socket_id, input)
+		}
 	})	
 })
 

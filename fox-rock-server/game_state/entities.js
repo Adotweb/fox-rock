@@ -1,4 +1,7 @@
-import { chunk_width, chunk_height, map_offset_x, map_offset_y } from "../game_config.json"
+const {chunk_width, chunk_height, map_offset_x, map_offset_y} = require("../game_config.json")
+
+
+const crypto = require("crypto")
 
 function EntityList(){
 	let list = [];
@@ -21,7 +24,8 @@ function EntityList(){
 
 	return {
 		register_entity, 
-		register_entity_list
+		register_entity_list,
+		get_list
 	}
 }
 
@@ -67,14 +71,17 @@ class Entity {
 	}
 
 	//update_info holds information about other entities
-	update(update_info){
+	update(){
+
 		this.rotation += this.rot_direction * this.rot_speed * Math.PI/180
 
-		this.pos = [
-			this.pos[0] + direction[0] * this.speed,
-			this.pos[1] + direction[1] * this.speed
+
+		this.position = [
+			this.position[0] + this.direction[0] * this.speed,
+			this.position[1] + this.direction[1] * this.speed
 		]
 		
+		console.log(this.position)	
 	}
 
 }
@@ -95,8 +102,10 @@ class Player extends Entity{
 	}
 
 	change_walk_state(direction){
-		
 		let mag = Math.sqrt(direction[0]**2 + direction[1]**2);
+		if(mag == 0){
+			mag = 1
+		}
 		this.direction = [
 			direction[0]/mag,
 			direction[1]/mag
