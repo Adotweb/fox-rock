@@ -38,12 +38,12 @@ function EntityList(){
 class Entity {
 	constructor(position){
 		this.position = position || [0, 0];
-		this.chunk_position = [
-			Math.floor(this.position[0]/chunk_width) + map_offset_x,
-			Math.floor(this.position[1]/chunk_height) + map_offset_y
+		this.chunk_coords = [
+			Math.floor(this.position[0]/chunk_width),
+			Math.floor(this.position[1]/chunk_height)
 		]
 
-		this.in_chunk_coords = [
+		this.chunk_pos = [
 			this.position[0] % chunk_width,
 			this.position[1] % chunk_height
 		]
@@ -85,14 +85,24 @@ class Entity {
 			this.position[0] + this.direction[0] * this.speed,
 			this.position[1] + this.direction[1] * this.speed
 		]
+
+		this.chunk_coords = [
+			Math.floor(this.position[0]/8),
+			Math.floor(this.position[1]/8)
+		]
+
+		this.chunk_pos = [
+			this.position[0] % 8,
+			this.position[1] % 8
+		]
 		
 	}
 
 	serialize(){
 		return {
 			position : this.position,
-			chunks_coords : this.in_chunk_coords,
-			chunk_pos : this.chunk_position,
+			chunk_coords : this.chunk_coords,
+			chunk_pos : this.chunk_pos,
 			rotation : this.rotation,
 			type : this.type,
 			name : this.name,
