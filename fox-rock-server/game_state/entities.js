@@ -174,7 +174,6 @@ class Player extends Entity{
 
 		let chunk = map[this.chunk_pos[0] + this.chunk_offset[0]][this.chunk_pos[1] + this.chunk_offset[0]];
 
-		console.log(this.chunk_coords)
 		if(chunk[map_index] == 1){
 			return true
 		}
