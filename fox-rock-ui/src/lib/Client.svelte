@@ -25,20 +25,72 @@ ws_connection.onmessage = (proto) => {
 
 	if(data.type == "initialize"){
 
+
 		world_map = data.world_map
 
 		player_id = data.player_id
+		
+		chunk_offset = data.chunk_offset;
+		player_pos = data.position;
+		chunk_coords = data.chunk_coords;
+		chunk_pos = data.chunk_pos;
+		rot = data.player_rot;
 
-		console.log(world_map, player_id)
+
 		return
 	}
 
-
-	game_state = data;		
+	
+	if(data.type == "update"){
+		
+		let player = data.entities.filter(entity => entity.id == player_id)[0];
+		
+		chunk_coords = player.chunk_coords;
+		player_pos = player.position;
+		rot = player.rotation;
+		chunk_pos = player.chunk_pos;
+		
+		
+	}
 	
 }
 
+//input
+let direction = [0, 0];
+let rot = 0;
+
+function onkeydown(e){
+	if(e.key == "w"){
+		direction[1] = -1;
+	}if(e.key == "a"){
+		direction[0] = -1;
+	}if(e.key == "s"){
+		direction[1] = 1;
+	}if(e.key == "d"){
+		direction[0] = 1;
+	}
+}
+
+function onkeyup(e){
+	if(e.key == "w"){
+		direction[1] = 0;
+	}if(e.key == "a"){
+		direction[0] = 0;
+	}if(e.key == "s"){
+		direction[1] = 0;
+	}if(e.key == "d"){
+		direction[0] = 0;
+	}
+}
 //game state things
+
+//player_position 
+
+let player_pos = [0, 0];
+let chunk_pos = [0, 0];
+let chunk_coords = [0, 0];
+let chunk_offset = [0, 0];
+
 
 let world_map = Array.from({length : 100}, () => new Array(100).fill(false));
 
@@ -78,8 +130,11 @@ onMount(() => {
 let fps = 60
 
 setInterval(() => {
-	console.log(player_id)
-
+	send_input({
+		direction,
+		rotation : rot
+	});
+	console.log(player_pos, chunk_pos, chunk_coords)
 }, 1000/fps)
 
 </script>
@@ -93,6 +148,8 @@ setInterval(() => {
 }
 
 </style>
+
+<svelte:window {onkeyup} {onkeydown}></svelte:window>
 
 <canvas class="mini-map" bind:this={mini_map} height={mini_map_h} width={mini_map_w}></canvas>
 

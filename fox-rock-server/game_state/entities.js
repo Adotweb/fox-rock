@@ -48,6 +48,8 @@ class Entity {
 			this.position[1] % chunk_height
 		]
 
+		this.chunk_offset = [50, 50]
+
 
 		this.id = crypto.randomUUID();
 		this.type = "entity"
@@ -95,6 +97,9 @@ class Entity {
 			this.position[0] % 8,
 			this.position[1] % 8
 		]
+
+
+		console.log(this.position)
 		
 	}
 

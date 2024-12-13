@@ -11,11 +11,11 @@ const connections = new Map();
 
 const game_state = new GameState();
 
-function broad_cast(message){
+function broadcast(message){
 
 	[...connections.values()].forEach(socket => {
 	
-		socket.send(JSON.stringify(message))
+		socket.send(JSON.stringify({type : "update" , ...message}))
 
 	})
 	
@@ -32,14 +32,15 @@ wss.on("connection", (socket) => {
 	connections.set(socket_id, socket)
 
 
-	game_state.player_login(socket_id)
+	let player_info = game_state.player_login(socket_id)
 	socket.socket_id = socket_id;	
 
-
 	socket.send(JSON.stringify({
-		type : "initialize",
+		...player_info,
 		world_map,
-		player_id : socket.socket_id
+		chunk_offset : [50, 50],
+		player_id : socket.socket_id,
+		type : "initialize",
 	}))
 
 	socket.on("close", () => {	
@@ -53,7 +54,6 @@ wss.on("connection", (socket) => {
 
 		let { type } = data;
 		
-		console.log("Hello")
 
 		if(type == "update"){
 			let { input } = data;
@@ -67,6 +67,6 @@ const updates_per_second = 40
 setInterval(() => {
 	game_state.update()
 	
-	broad_cast(game_state.serialize())
+	broadcast(game_state.serialize())
 
 }, 1000/updates_per_second)

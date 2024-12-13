@@ -32,9 +32,11 @@ class GameState{
 	}
 
 	player_login(player_id){
+		let player = new Player([2, 2], 0, player_id);
 		this.entities.register_entity(
-			new Player([0, 0], 0, player_id),
+			player
 		)
+		return player.serialize()
 	}
 
 	player_logout(player_id){
