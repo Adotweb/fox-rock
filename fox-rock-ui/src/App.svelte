@@ -8,6 +8,4 @@ import Client from "./lib/Client.svelte";
 <main>
 
 	<Client></Client>
-	
-
 </main>
