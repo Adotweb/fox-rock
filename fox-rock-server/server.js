@@ -1,7 +1,5 @@
 const { WebSocketServer } = require("ws");
 const { GameState } = require("./game_state/game_state");
-const { world_map } = require("./map/map");
-
 const crypto = require("crypto")
 
 const wss = new WebSocketServer({ port : 3000 });
@@ -37,7 +35,7 @@ wss.on("connection", (socket) => {
 
 	socket.send(JSON.stringify({
 		...player_info,
-		world_map,
+		world_map : game_state.map,
 		chunk_offset : [50, 50],
 		player_id : socket.socket_id,
 		type : "initialize",

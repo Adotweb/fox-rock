@@ -1,17 +1,27 @@
 const { Entity, EntityList, Player } = require("./entities")
 
+let default_map = [
+	1, 1, 1, 0, 0, 1, 1, 1,
+	1, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 0, 0, 0, 0, 1, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	1, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 0, 0, 0, 0, 1, 
+	1, 1, 1, 0, 0, 1, 1, 1, 
+]
 
 class GameState{
 	constructor(){
 		this.entities = EntityList();
-
+		this.map = Array.from({length : 100}, () => new Array(100).fill(default_map))
 	}
 
 
 	update(){
 		//updates every entity with the information about the other entities
 		this.entities.get_list().forEach(entity => {
-			entity.update(this.entities.get_list())
+			entity.update({entities : this.entities.get_list(), map : this.map})
 		})
 	}
 

@@ -39,13 +39,13 @@ class Entity {
 	constructor(position){
 		this.position = position || [0, 0];
 		this.chunk_coords = [
-			Math.floor(this.position[0]/chunk_width),
-			Math.floor(this.position[1]/chunk_height)
+			this.position[0] % chunk_width,
+			this.position[1] % chunk_height
 		]
 
 		this.chunk_pos = [
-			this.position[0] % chunk_width,
-			this.position[1] % chunk_height
+			Math.floor(this.position[0] / chunk_width),
+			Math.floor(this.position[1] / chunk_height)
 		]
 
 		this.chunk_offset = [50, 50]
@@ -55,7 +55,7 @@ class Entity {
 		this.type = "entity"
 
 		this.direction = [0, 0];
-		this.speed = 1;
+		this.speed = 0.01;
 
 		this.rotation = 0;
 		this.rot_direction = 0;
@@ -78,29 +78,43 @@ class Entity {
 	}
 
 	//update_info holds information about other entities
-	update(){
-
-		this.rotation += this.rot_direction * this.rot_speed * Math.PI/180
+	update(update_info){
 
 
+
+		let previous_pos = this.position;
+		let previous_rot = this.rotation;
+		let previous_chunk_pos = this.chunk_pos;
+		let previous_chunk_coords = this.chunk_coords;
+
+		this.rotation += -this.rot_direction * this.rot_speed * Math.PI/180
 		this.position = [
-			this.position[0] + this.direction[0] * this.speed,
-			this.position[1] + this.direction[1] * this.speed
+			this.position[0] + this.direction[0] ,
+			this.position[1] + this.direction[1] 
 		]
 
+
 		this.chunk_coords = [
-			Math.floor(this.position[0]/8),
-			Math.floor(this.position[1]/8)
+			this.position[0] % chunk_width,
+			this.position[1] % chunk_height
 		]
 
 		this.chunk_pos = [
-			this.position[0] % 8,
-			this.position[1] % 8
+			Math.floor(this.position[0] / chunk_width),
+			Math.floor(this.position[1] / chunk_height)
 		]
 
+		let collided = this.check_collision(update_info)
 
-		console.log(this.position)
-		
+		if(collided){
+			this.position = previous_pos;
+			this.rotation = previous_rot;
+			this.chunk_coords = previous_chunk_coords;
+			this.chunk_pos = previous_chunk_pos;
+		}			
+	}
+
+	check_collision({map, entities}){
 	}
 
 	serialize(){
@@ -125,11 +139,11 @@ class Player extends Entity{
 		this.id = socket_id	
 
 		this.name = "player"
-		this.speed = 1;
+		this.speed = 0.1;
 		this.rotation = rotation;
 		this.direction = [0, 0]
 		this.rot_direction = 0
-		this.rot_speed = 1;
+		this.rot_speed = 3;
 	}
 
 	change_walk_state(direction){
@@ -138,15 +152,35 @@ class Player extends Entity{
 			mag = 1
 		}
 		this.direction = [
-			direction[0]/mag,
-			direction[1]/mag
+			(direction[0] * Math.cos(this.rotation) + direction[1] * Math.sin(this.rotation))/mag * this.speed,
+			(direction[0] * Math.sin(this.rotation) - direction[1] * Math.cos(this.rotation))/mag * this.speed,
 		]
 	}
+
+
 
 	change_rotation_state(rot_direction){
 		this.rot_direction = rot_direction	
 	}
 
+	check_collision({ map, entities }){
+		let ccx = this.chunk_coords[0]
+		let ccy = this.chunk_coords[1]
+
+		ccx = ccx < 0 ? ccx + 8 : ccx
+		ccy = ccy < 0 ? ccy + 8 : ccy
+
+		let map_index = Math.floor(ccx) * 8 + Math.floor(ccy)
+
+		let chunk = map[this.chunk_pos[0] + this.chunk_offset[0]][this.chunk_pos[1] + this.chunk_offset[0]];
+
+		console.log(this.chunk_coords)
+		if(chunk[map_index] == 1){
+			return true
+		}
+
+		return false;
+	}
 }
 
 module.exports = {
