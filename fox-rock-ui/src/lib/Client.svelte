@@ -1,5 +1,6 @@
 <script>
 import { onMount } from "svelte"
+        import { entity_rendering_map } from "../render-entites/entities";
 
 //game connection things
 let ws_connection = new WebSocket("ws://localhost:3000");
@@ -51,6 +52,8 @@ ws_connection.onmessage = (proto) => {
 		let new_chunk_pos = player.chunk_pos;
 		
 		entities = data.entities
+		.filter(entity => entity.id !== player_id)
+		.map(entity => new entity_rendering_map[entity.name](entity.position, player_pos, rot))
 
 		if(
 			new_chunk_pos[0] == chunk_pos[0] && new_chunk_pos[1] == chunk_pos[1] && 
@@ -68,7 +71,6 @@ ws_connection.onmessage = (proto) => {
 
 			edges = [];
 			mini_map_squares = [];
-
 
 			loaded_chunks = load_chunks();
 
@@ -479,6 +481,15 @@ function render_edges(edges) {
 			type : "map"
                 });
         }
+
+	entities.forEach(render_entity => {
+
+		render_order = insertIntoSortedArray(render_order, {
+			data : render_entity,
+			...render_entity
+		})
+	})
+
         render_order.reverse().forEach(({ data, color, type, depth}) => {
 
 		if(type == "entity")	{
@@ -590,13 +601,13 @@ setInterval(() => {
 
 	mini_map_ctx.clearRect(0, 0, mini_map_w, mini_map_h)
 
+	render_mini_map();
 	send_input({
 		direction,
 		rotation : rot_dir
 	});
 	
 	render_edges(edges)
-	render_mini_map();
 
 }, 1000/fps)
 
