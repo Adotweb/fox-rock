@@ -2,15 +2,20 @@ import { Ghoul } from "../enemies/ghoul";
 import { Zombie } from "../enemies/zombie";
 import { EntityList } from "./entities";
 
-
+//player state management function
+//these functions below are used to create an atomic base for the information
 function create_player_state(pos){
 
+	//not a svelte store for a simple reason: technical overhead
+	//and we dont need the values in ui only in code itself
 	let positions = pos;
 
+	//accessor
 	function get(){
 		return positions;
 	}
 
+	//setter
 	function set(update){
 		update(positions)
 	}
@@ -19,6 +24,7 @@ function create_player_state(pos){
 
 }
 
+//same here
 function create_chunk_state(map_size){
 	
 	let chunks = Array.from({ length: map_size }, () => new Array(map_size).fill(false));
@@ -36,7 +42,7 @@ function create_chunk_state(map_size){
 	return [get, update]
 }
 
-
+//this creates the states
 export let player_state = create_player_state({
 	player_pos : [2, 2],
 	chunk_pos : [0, 0],
@@ -51,6 +57,6 @@ export let chunk_state = create_chunk_state(100);
 
 export let entity_state = EntityList();
 
-
+//register a ghoul to the entities for the player to see
 entity_state.register_entity(new Ghoul([4, 4], 0, 1))
 //entity_state.register_entity(new Zombie([5, 5]))

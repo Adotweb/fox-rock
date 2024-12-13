@@ -1,4 +1,5 @@
 <script>
+//refactor this below part
         import { Bullet } from "../enemies/bullet.js";
 import { chunk_state, player_state, entity_state } from "../state/game_state.js"
 

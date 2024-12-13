@@ -10,25 +10,31 @@ export class Bullet extends Entity{
 		this.direction = direction
 	}
 
-
+	//this updates the current position in perspective of the player, handling stuff like collision to destroy other 
+	//and so on
 	update(update_info){	
 		let { player_pos, player_rot_trig, map_data } = update_info;
-		
+	
+		//precomputed sine and cosine
 		let [csx, snx] = player_rot_trig
 
+		//get the view direction (or here the reverse view direction - because im a dumbass - the math is now reversed...)
 		let direction_to_player = [
 			player_pos[0] - this.pos[0],
 			player_pos[1] - this.pos[1]
 		]
 
-
+		//this would be to normalize the speed, since we multiply with a constant and this is just a draft we can ignore it	
 		let direction_mag = Math.sqrt(direction_to_player[0]**2 + direction_to_player[1]**2)
 
+		//add the direction * speed to the position
 		this.pos = [
 			this.pos[0] - this.direction[1] * this.speed/100,
 			this.pos[1] + this.direction[0] * this.speed/100,
 		]
 
+
+		//update chunk_coordinates and position
 		let chunk_coords = [
 			Math.floor(this.pos[0]/8) + 50,
 			Math.floor(this.pos[1]/8) + 50
@@ -39,6 +45,8 @@ export class Bullet extends Entity{
 			this.pos[1] % 8
 		]
 
+
+		//check collision with map parts, if we detect a collision we delete this entity
 		let chunk = map_data[chunk_coords[0]][chunk_coords[1]];
 
 		let index = Math.floor(in_chunk_coords[1]) * 8 + Math.floor(in_chunk_coords[0])

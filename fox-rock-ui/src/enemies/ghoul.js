@@ -22,7 +22,7 @@ export class Ghoul extends Entity {
 		this.src = "/public/ghoul.png"
 	}
 
-
+	//same as in bullet but here also check for collisions in 
 	update(update_info){
 
 		let { player_pos, player_rot_trig } = update_info;

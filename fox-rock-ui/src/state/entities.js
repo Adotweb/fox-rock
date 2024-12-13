@@ -1,4 +1,5 @@
-function insertIntoSortedArray(sortedArray, value) {
+//more efficient than linear insertion
+function insert_into_sorted_array(sortedArray, value) {
         let left = 0;
         let right = sortedArray.length - 1;
 
@@ -25,11 +26,14 @@ export function EntityList(){
 
 	let list = [];
 
-
+	//when this method is called we go through every entity and update it using 
+	//every other entity (so we can perform collision detection etc.). This approach 
+	//is inefficient and will be replaced with BSPing (which would go out of the scope of this)
+	//(also i want to implement bsping in the server version)
 	function update_entity_state(update_info, render_order){
 		list.forEach(entity => {	
 			entity.update({...update_info, other_entities : list})
-			render_order = insertIntoSortedArray(render_order, {
+			render_order = insert_into_sorted_array(render_order, {
 				data : entity,
 				...entity
 			})
@@ -41,6 +45,7 @@ export function EntityList(){
 		entity.register_to(list)
 	}
 
+	//this function will probably never be used, but its a nice helper
 	function register_entity_list(entity_list){
 		entity_list.forEach(entity => {
 			entity.register_to(list)
