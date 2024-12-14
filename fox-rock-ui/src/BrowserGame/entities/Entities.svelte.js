@@ -9,6 +9,10 @@ class Entity {
 
 		//we add a type so we can check what kind of rendering we have to use later
 		this.type = "entity"
+		
+
+		//the depth we use for the painters algorithm 
+		this.depth = Infinity;
 	}
 
 	//easier way than to push because we can store a reference to the entity state
@@ -34,7 +38,7 @@ class Entity {
 
 	//this method actually puts something on the screen 
 	//this allows us to define custom drawing for every entity
-	render(screen_information, mini_map_information){
+	render(screen, mini_map){
 
 	}
 
@@ -48,6 +52,10 @@ class Entity {
 	handle_collision(entity){
 
 	}
+}
+
+export class Wall extends Entity{
+		
 }
 
 export class Ghoul extends Entity {
@@ -64,7 +72,7 @@ export class Ghoul extends Entity {
 	//the ghoul tries to move to the player (through walls for now)
 	update(update_info){
 	
-		let { player_position, entities } = update_info;
+		let { player_position, player_rotation, entities } = update_info;
 
 		//get the direction to the player	
 		let direction_to_player = [
@@ -85,6 +93,20 @@ export class Ghoul extends Entity {
 			this.position[0] + direction_to_player[0] * this.speed,
 			this.position[1] + direction_to_player[1] * this.speed,
 		]
+
+
+		//get the relative z (forward) and x (left-right) position to the player and his rotation
+		this.relative_position = [
+			direction_to_player[0] * Math.cos(player_rotation) + direction_to_player[1] * Math.sin(player_rotation),
+			direction_to_player[0] * Math.sin(player_rotation) - direction_to_player[1] * Math.cos(player_rotation),
+		]
+
+
+		//set the depth to the forward relative position
+		if(this.relative_position[1] > 0){
+			this.depth = this.relative_position[1]
+		}
+
 	
 		//check if we have collided
 		this.check_collision(entities)
@@ -116,5 +138,8 @@ export class Ghoul extends Entity {
 		//if(entity.name == "bullet"){
 		//	entity.destroy
 		//}
+	}
+
+	render(screen, mini_map){
 	}
 }
