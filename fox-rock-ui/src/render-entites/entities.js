@@ -1,48 +1,63 @@
 //unlike in the enemies folder everything inside of here is just for the sake of rendering,
 //there is no logic in these entities as everything in that regard is handled serverside (in this version at least)
-
-
-let w = 800;
-let h = 800;
-
-let mini_map_w = 300;
-let mimi_map_h = 300;
-
 class RenderEntity{
 	constructor(position, player_position, player_rotation){
+
+		//one could inquire that we could update an entity instead of creatin new ones every frame, 
+		//which is true, but i dont care
 		this.position = position;
 
+
+		//this has to be done every frame as well
+		//by now we know the drill, get the relative position to the player
 		let player_relative_position = [
 			this.position[0] - player_position[0],
 			this.position[1] - player_position[1]
 		]
-
+		
+		//then get the relative position along the players z and x axis (camera rotation)
 		this.rel_pos = [
 			(player_relative_position[0] * Math.cos(player_rotation) + player_relative_position[1] * Math.sin(player_rotation)),
 			(-player_relative_position[0] * Math.sin(player_rotation) + player_relative_position[1] * Math.cos(player_rotation)),
 		]	
 
+
+		//set the type (for entity filtering in render_edges) and color 
 		this.type = "entity"
 		this.color = "black"
+
+		//put the entity at the very back by default
 		this.depth = Infinity;
-		
+	
+		//then check if the entity is in fron of the player, if yes, set the depth for sorting in painters algo
 		if(this.rel_pos[1] > 0){
 			this.depth = this.rel_pos[1]
 		}
 	}
 
-
 	render(screen, mini_map){
 
+	}
+}
+
+//dummy class (for now)
+class Player extends RenderEntity{
+
+
+	render(screen, mini_map){
+		this.color = "green"
+		//mini-map dimensions
 		let mmw = 300;
 		let mmh = 300;
 
 		mini_map.beginPath();
-	
+		
+		//the position on the mini-map
 		let mini_map_x = mmw/2 + mmw/2 * this.rel_pos[0]/10;
 		let mini_map_y = mmh/2 - mmh/2 * this.rel_pos[1]/10;
 		
 
+		//make a small circle on the mini-map where the enemy is
 		mini_map.beginPath();
 		mini_map.arc(mini_map_x, mini_map_y, 5, 0, 2 * Math.PI)
 
@@ -51,24 +66,27 @@ class RenderEntity{
 
 
 
+		//check if were in front of the player
 		if(this.rel_pos[1]  < 0){
 			return
 		}
+
+		//calculate the x coordinate on the screen	
 		let sx = this.rel_pos[0]/this.rel_pos[1]
 
+
+		//draw a green orb where the entity is relative to the player (with radious 1/distance) for accurate depth perception
 		screen.beginPath();
 		screen.arc(sx * 400 + 400, 400, 100 * 1/this.rel_pos[1], 0, 2 * Math.PI)
 
-		screen.fillStyle = "green"
+		screen.fillStyle = this.color 
 		screen.fill()
 	}
+
 }
 
 
-class Player extends RenderEntity{
-	
-}
-
+//export a map for easy discerning when converting entity information from the server to a RenderEntity
 export let entity_rendering_map ={
 	"player" : Player
 }
