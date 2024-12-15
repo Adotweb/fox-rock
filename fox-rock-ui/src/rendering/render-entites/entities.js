@@ -1,4 +1,4 @@
-import { mini_map_h, mini_map_w, screen_h, screen_w } from "../state/config.svelte"
+import { mini_map_h, mini_map_w, screen_h, screen_w } from "../../state/config.svelte"
 
 //unlike in the enemies folder everything inside of here is just for the sake of rendering,
 //there is no logic in these entities as everything in that regard is handled serverside (in this version at least)

@@ -1,5 +1,6 @@
 import { writable } from "svelte/store";
 
+//global configuration that does change
 //not frequently changing variables to which we need access from everywhere
 export const global_state = writable({
 	chunk_offset : [0, 0],

@@ -3,10 +3,12 @@ import { global_state } from "../state/global.svelte";
 import { mini_map_h, mini_map_w, screen_h, screen_w } from "../state/config.svelte";
 
 
-let render_dist = 1;
+const render_dist = 1;
 let w = screen_w;
 let h = screen_h;
 
+
+//we try to minimze creation of new arrays so we pass in the buffers directly to the below functions so they can be altered in place
 
 //we need to check if the chunk exists before we can access it
 //if it doesnt we create it
@@ -226,6 +228,8 @@ export function insert_into_sorted_array(sortedArray, value) {
         sortedArray.splice(left, 0, value);
 }
 
+
+//send the edges that need to be rendered to the render_order buffer, by effciently binary inserting into the buffer
 export function prepare_edges(edges, render_order){
 	let [px, py] = get(global_state).player_pos;
 	let rot = get(global_state).player_rot;
@@ -297,6 +301,8 @@ export function prepare_edges(edges, render_order){
 
 }
 
+
+//same for entities
 export function prepare_entities(entities, render_order) {        	
 	//we insert the entities into the render_order buffer so were able to draw them using the painters algorithm as well
 	entities.forEach(render_entity => {	

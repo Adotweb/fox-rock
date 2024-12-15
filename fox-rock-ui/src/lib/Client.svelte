@@ -1,10 +1,8 @@
 <script>
 import { onMount } from "svelte"
-import { entity_rendering_map } from "../render-entites/entities";
+import { entity_rendering_map } from "../rendering/render-entites/entities";
 import { mini_map_h, mini_map_w, screen_h, screen_w } from "../state/config.svelte";
-
 import { render_mini_map, render_buffer, prepare_edges, prepare_entities, load_edges, load_chunks } from "../rendering/rendering.svelte"
-
 import { global_state } from "../state/global.svelte"
 
 //game connection things
