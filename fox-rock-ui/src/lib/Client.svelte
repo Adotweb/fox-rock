@@ -1,4 +1,8 @@
 <script>
+//function to change the mode of the window
+export let decide_mode;
+
+
 import { onMount } from "svelte"
 import { entity_rendering_map } from "../rendering/render-entites/entities";
 import { mini_map_h, mini_map_w, screen_h, screen_w } from "../state/config.svelte";
@@ -154,6 +158,8 @@ function onkeydown(e){
 		rot_dir = -1
 	}if(e.key == "ArrowRight"){
 		rot_dir = 1
+	} if(e.key == "Escape"){
+		decide_mode("menu")
 	}
 }
 
