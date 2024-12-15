@@ -1,3 +1,5 @@
+import { mini_map_h, mini_map_w, screen_h, screen_w } from "../state/config.svelte"
+
 //unlike in the enemies folder everything inside of here is just for the sake of rendering,
 //there is no logic in these entities as everything in that regard is handled serverside (in this version at least)
 class RenderEntity{
@@ -47,8 +49,8 @@ class Player extends RenderEntity{
 	render(screen, mini_map){
 		this.color = "green"
 		//mini-map dimensions
-		let mmw = 300;
-		let mmh = 300;
+		let mmw = mini_map_w;
+		let mmh = mini_map_h;
 
 		mini_map.beginPath();
 		
@@ -77,7 +79,7 @@ class Player extends RenderEntity{
 
 		//draw a green orb where the entity is relative to the player (with radious 1/distance) for accurate depth perception
 		screen.beginPath();
-		screen.arc(sx * 400 + 400, 400, 100 * 1/this.rel_pos[1], 0, 2 * Math.PI)
+		screen.arc(sx * screen_w/2 + screen_w/2, screen_h/2, 100 * 1/this.rel_pos[1], 0, 2 * Math.PI)
 
 		screen.fillStyle = this.color 
 		screen.fill()
