@@ -11,8 +11,11 @@ import { global_state } from "../state/global.svelte"
     import { get } from "svelte/store";
     import { connection } from "../state/connection.svelte";
 
+import { default_server_url } from "../state/config.svelte"
 
-let host_connection;
+
+console.log(default_server_url)
+let host_connection = get(connection) || new WebSocket(default_server_url);
 
 
 
@@ -22,12 +25,11 @@ onMount(() => {
 	ctx = screen.getContext("2d");
 	mini_map_ctx = mini_map.getContext("2d")
 
-	host_connection = get(connection);
 
 	console.log(host_connection)
 
 	create_send_function();
-	host_connection.on("data", host_connection_on_message);
+	host_connection.onmessage = host_connection_on_message;
 })
 
 //give a handle to the send input function 
@@ -49,7 +51,7 @@ let create_send_function = () => {
 let host_connection_on_message = (proto) => {
 
 	
-	let data = JSON.parse(proto);
+	let data = JSON.parse(proto.data);
 
 	//the first message well receive from the server is the initial message that contains:
 	//- our player id 

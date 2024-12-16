@@ -3,12 +3,15 @@
 export let decide_mode;
 
 
-function accept_play(){
-	decide_mode("connect")
+function play_default_server(){
+	decide_mode("play")
 }	
 
-function accept_host(){
-	decide_mode("host")
+function play_defined_server(){
+	decide_mode("connect")
+}
+function create_defined_server(){
+	decide_mode("create")
 }
 
 </script>
@@ -57,8 +60,9 @@ function accept_host(){
 
 <div class="popup">
 	<div class="box">
-		<button onclick={accept_play}>Play</button>
-		<button onclick={accept_host}>Host</button>
+		<button onclick={play_default_server}>Play default server (recommended)</button>
+		<button onclick={play_defined_server}>Play custom server</button>
+		<button onclick={create_defined_server}>create custom server</button>
 	</div>	
 </div>
 
