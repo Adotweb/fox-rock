@@ -1,64 +1,56 @@
 <script>
+let props = $props();
 
-  import Peer from 'peerjs';
-        import { onMount } from 'svelte';
+let decide_mode = props.decide_mode;
 
-  let peer;
-  let connection;
-  let remoteId = '';
-  let message = '';
-  let chatLog = [];
 
-  // Initialize PeerJS
-  onMount(() => {
-    peer = new Peer(); // Automatically generates an ID
-    peer.on('open', (id) => {
-      console.log('Your ID:', id);
-    });
+import Peer from 'peerjs';
+import { onMount } from 'svelte';
+import { connection } from "../state/connection.svelte"
+import { get } from 'svelte/store';
+import App from '../App.svelte';
 
-    // Listen for incoming connections
-    peer.on('connection', (conn) => {
-      connection = conn;
-      setupConnectionEvents(connection);
-    });
-  });
+let peer;
+let this_peer_id = $state("")
 
-  const connectToPeer = () => {
-    connection = peer.connect(remoteId);
-    setupConnectionEvents(connection);
-  };
+let host_peer_id;
+let host_connection
 
-  const setupConnectionEvents = (conn) => {
-    conn.on('data', (data) => {
-      chatLog = [...chatLog, `Peer: ${data}`];
-    });
-  };
 
-  const sendMessage = () => {
-    if (connection) {
-      connection.send(message);
-      chatLog = [...chatLog, `You: ${message}`];
-      message = '';
-    }
-  };
+
+onMount(() => {
+	//Create peer connection
+	peer = new Peer();
+
+	
+	peer.on("connection", conn => {
+		conn.on("data", data => {
+		})
+	})
+
+})
+
+
+function connect_to_host_peer(){
+	console.log(host_peer_id)
+	host_connection = peer.connect(host_peer_id)
+
+
+	host_connection.on("open", () => {
+		
+		console.log("Hello")
+
+	})
+
+}
+
+
 </script>
 
-<div>
-  <h2>PeerJS Chat</h2>
-  <div>
-    <h3>Your Peer ID</h3>
-    <code>{peer?.id || 'Generating...'}</code>
-  </div>
-  <div>
-    <h3>Connect to Peer</h3>
-    <input bind:value={remoteId} placeholder="Remote Peer ID" />
-    <button on:click={connectToPeer}>Connect</button>
-  </div>
-  <div>
-    <h3>Chat</h3>
-    <textarea rows="10" cols="50" readonly value={chatLog.join('\n')}></textarea>
-    <input bind:value={message} placeholder="Type a message" />
-    <button on:click={sendMessage}>Send</button>
-  </div>
-</div>
 
+<div>
+	<input type="text" bind:value={host_peer_id} placeholder="Host Id">	
+	<div>this peer id: {this_peer_id}</div>
+	<button onclick={connect_to_host_peer}>Connect</button>
+	
+</div>

@@ -8,6 +8,11 @@ import { entity_rendering_map } from "../rendering/render-entites/entities";
 import { mini_map_h, mini_map_w, screen_h, screen_w } from "../state/config.svelte";
 import { render_mini_map, render_buffer, prepare_edges, prepare_entities, load_edges, load_chunks } from "../rendering/rendering.svelte"
 import { global_state } from "../state/global.svelte"
+    import { get } from "svelte/store";
+    import { connection } from "../state/connection.svelte";
+
+
+let host_connection;
 
 //game connection things
 let ws_connection = new WebSocket("ws://localhost:3000");
@@ -253,6 +258,10 @@ onMount(() => {
 	//set the contexts as soon as they are ready
 	ctx = screen.getContext("2d");
 	mini_map_ctx = mini_map.getContext("2d")
+
+	let host_connection = get(connection);
+	console.log(host_connection)
+
 })
 
 

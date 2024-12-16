@@ -1,62 +1,75 @@
 <script>
-  import Peer from 'peerjs';
-        import { onMount } from 'svelte';
-  let peer;
-  let connection;
-  let remoteId = '';
-  let message = '';
-  let chatLog = [];
+import Peer from "peerjs";
+import { onMount } from "svelte";
 
-  // Initialize PeerJS
-  onMount(() => {
-    peer = new Peer(); // Automatically generates an ID
-    peer.on('open', (id) => {
-      console.log('Your ID:', id);
-    });
 
-    // Listen for incoming connections
-    peer.on('connection', (conn) => {
-      connection = conn;
-      setupConnectionEvents(connection);
-    });
-  });
 
-  const connectToPeer = () => {
-    connection = peer.connect(remoteId);
-    setupConnectionEvents(connection);
-  };
 
-  const setupConnectionEvents = (conn) => {
-    conn.on('data', (data) => {
-      chatLog = [...chatLog, `Peer: ${data}`];
-    });
-  };
 
-  const sendMessage = () => {
-    if (connection) {
-      connection.send(message);
-      chatLog = [...chatLog, `You: ${message}`];
-      message = '';
-    }
-  };
+let host_peer;
+
+let host_id = $state("");
+
+
+let connections = new Map();
+
+let connection_ids = $state([])
+
+let default_chunk = [
+	1, 1, 1, 0, 0, 1, 1, 1,
+	1, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 0, 0, 0, 0, 1, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	1, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 0, 0, 0, 0, 1, 
+	1, 1, 1, 0, 0, 1, 1, 1, 
+]
+
+let chunk_offset = [50, 50];
+let world_map = Array.from({length : 100}, () => new Array(100).fill(default_chunk));
+
+onMount(() => {
+
+	host_peer = new Peer();
+	
+
+	host_peer.on("open", id => {
+		host_id = id;
+	})
+
+	host_peer.on("connection", conn => {
+		console.log("hello something tries to connect")
+
+		conn.on("open", id => {
+
+			console.log("hello")		
+
+		})
+		
+	})
+
+})
+
 </script>
 
-<div>
-  <h2>PeerJS Chat</h2>
-  <div>
-    <h3>Your Peer ID</h3>
-    <code>{peer?.id || 'Generating...'}</code>
-  </div>
-  <div>
-    <h3>Connect to Peer</h3>
-    <input bind:value={remoteId} placeholder="Remote Peer ID" />
-    <button on:click={connectToPeer}>Connect</button>
-  </div>
-  <div>
-    <h3>Chat</h3>
-    <textarea rows="10" cols="50" readonly value={chatLog.join('\n')}></textarea>
-    <input bind:value={message} placeholder="Type a message" />
-    <button on:click={sendMessage}>Send</button>
-  </div>
-</div>
 
+<div>
+
+
+	<div>Host id:</div>	<br>
+	<div>{host_id}</div>
+
+	<div>
+		<p>
+			active connections
+		</p>
+	
+		<ul>
+			{#each connection_ids as conn}
+				<li>{conn}</li>						
+			{/each}
+		</ul>
+	</div>
+
+</div>
