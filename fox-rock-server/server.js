@@ -2,7 +2,10 @@ const { WebSocketServer } = require("ws");
 const { GameState } = require("./game_state/game_state");
 const crypto = require("crypto")
 
-const wss = new WebSocketServer({ port : 3000 });
+const app = require("express")()
+const server = require("http").createServer(app)
+
+const wss = new WebSocketServer({path:"/", server});
 
 const connections = new Map();
 
@@ -68,3 +71,6 @@ setInterval(() => {
 	broadcast(game_state.serialize())
 
 }, 1000/updates_per_second)
+
+
+server.listen(process.env.PORT || 3000)
