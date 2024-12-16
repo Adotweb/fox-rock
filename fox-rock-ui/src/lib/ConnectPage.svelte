@@ -20,28 +20,26 @@ let host_connection
 
 onMount(() => {
 	//Create peer connection
-	peer = new Peer();
-
-	
-	peer.on("connection", conn => {
-		conn.on("data", data => {
-		})
-	})
+	 peer = new Peer(crypto.randomUUID(), {
+    config: {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' }, // Google's free STUN server
+        ]
+    }
+});
 
 })
 
 
 function connect_to_host_peer(){
-	console.log(host_peer_id)
+	//connects to host id 
 	host_connection = peer.connect(host_peer_id)
 
-
-	host_connection.on("open", () => {
-		
-		console.log("Hello")
-
+	//when the host id accepts the handshake we move save the host_connection and move on to the game play part
+	host_connection.on("open", () => {	
+		connection.set(host_connection)
+		decide_mode("play")				
 	})
-
 }
 
 

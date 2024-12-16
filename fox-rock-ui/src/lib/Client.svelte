@@ -14,8 +14,21 @@ import { global_state } from "../state/global.svelte"
 
 let host_connection;
 
-//game connection things
-let ws_connection = new WebSocket("ws://localhost:3000");
+
+
+//init
+onMount(() => {
+	//set the contexts as soon as they are ready
+	ctx = screen.getContext("2d");
+	mini_map_ctx = mini_map.getContext("2d")
+
+	host_connection = get(connection);
+
+	console.log(host_connection)
+
+	create_send_function();
+	host_connection.on("data", host_connection_on_message);
+})
 
 //give a handle to the send input function 
 let send_input;
@@ -23,20 +36,20 @@ let send_input;
 //storage variable for the id later
 let player_id;
 
-ws_connection.onopen = () => {
+let create_send_function = () => {
 
 	//when the websocket connection or p2p connection is established we set the sendinput function
-	send_input = (update) => ws_connection.send(JSON.stringify({
+	send_input = (update) => host_connection.send(JSON.stringify({
 		input : update,	
 		type : "update"
 	}))
 
 }
 
-ws_connection.onmessage = (proto) => {
+let host_connection_on_message = (proto) => {
 
 	
-	let data = JSON.parse(proto.data);
+	let data = JSON.parse(proto);
 
 	//the first message well receive from the server is the initial message that contains:
 	//- our player id 
@@ -253,16 +266,6 @@ let render_order = [];
 
 
 
-
-onMount(() => {
-	//set the contexts as soon as they are ready
-	ctx = screen.getContext("2d");
-	mini_map_ctx = mini_map.getContext("2d")
-
-	let host_connection = get(connection);
-	console.log(host_connection)
-
-})
 
 
 //main game loop

@@ -2,8 +2,8 @@
 //Client is the version that implements multiplayer and server side logic
 import Client from "./lib/Client.svelte";
 import ConnectPage from "./lib/ConnectPage.svelte";
-//import Host from "./hosting/hosting_functions.svelte";
-import Host from "./lib/Host.svelte"
+import Host from "./hosting/hosting_functions.svelte";
+//import Host from "./lib/Host.svelte"
 import Popup from "./lib/Popup.svelte";
 
 
@@ -17,11 +17,9 @@ function decide_mode(passed_mode){
 }
 
 
-
 </script>
 
 <main>
-	{mode}
 	{#if mode == "menu"}	
 		<Popup {decide_mode}></Popup>
 	{/if}
