@@ -14,8 +14,7 @@ import { global_state } from "../state/global.svelte"
 import { default_server_url } from "../state/config.svelte"
 
 
-console.log(default_server_url)
-let host_connection = get(connection) || new WebSocket(default_server_url);
+let host_connection = new WebSocket(default_server_url);
 
 
 
@@ -26,10 +25,8 @@ onMount(() => {
 	mini_map_ctx = mini_map.getContext("2d")
 
 
-	console.log(host_connection)
-
 	create_send_function();
-	host_connection.onmessage = host_connection_on_message;
+	host_connection.onmessage = host_connection_on_message;	
 })
 
 //give a handle to the send input function 
@@ -43,7 +40,8 @@ let create_send_function = () => {
 	//when the websocket connection or p2p connection is established we set the sendinput function
 	send_input = (update) => host_connection.send(JSON.stringify({
 		input : update,	
-		type : "update"
+		type : "update",
+		group_id : get(connection)
 	}))
 
 }
@@ -52,6 +50,7 @@ let host_connection_on_message = (proto) => {
 
 	
 	let data = JSON.parse(proto.data);
+
 
 	//the first message well receive from the server is the initial message that contains:
 	//- our player id 
@@ -273,7 +272,13 @@ let render_order = [];
 //main game loop
 //repeat the below loop 60 times each second
 let fps = 60
-setInterval(() => {
+let deactivate_id = setInterval(() => {
+	
+
+	if(host_connection.readyState == WebSocket.CLOSED || host_connection.readyState == WebSocket.CLOSING){
+		clearInterval(deactivate_id)
+	}
+
 	//clear the render_order buffer
 	render_order = [];
 

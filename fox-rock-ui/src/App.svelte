@@ -3,7 +3,7 @@
 import Client from "./lib/Client.svelte";
 import ConnectPage from "./lib/ConnectPage.svelte";
 import Popup from "./lib/Popup.svelte";
-
+import CreatePage from "./lib/CreatePage.svelte";
 
 //state to control the thing that is drawn to the screen
 let mode = $state("menu")
@@ -28,6 +28,10 @@ function decide_mode(passed_mode){
 
 	{#if mode == "play"}	
 		<Client {decide_mode}></Client>
+	{/if}
+
+	{#if mode == "create"}
+		<CreatePage {decide_mode}></CreatePage>	
 	{/if}
 
 </main>
