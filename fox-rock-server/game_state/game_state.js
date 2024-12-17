@@ -15,6 +15,7 @@ class GameState{
 	constructor(){
 		this.entities = EntityList();
 		this.map = Array.from({length : 100}, () => new Array(100).fill(default_map))
+
 	}
 
 
@@ -35,10 +36,11 @@ class GameState{
 			return
 		}
 
-		let { direction, rotation } = input
+		let { direction, rotation, keyboard } = input
 
 		player.change_walk_state(direction)
 		player.change_rotation_state(rotation)
+		player.change_keyboard_state(keyboard)
 	}
 
 	player_login(player_id){

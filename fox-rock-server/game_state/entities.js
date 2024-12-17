@@ -144,6 +144,7 @@ class Player extends Entity{
 		this.direction = [0, 0]
 		this.rot_direction = 0
 		this.rot_speed = 3;
+		this.keyboard_state = [];
 	}
 
 	change_walk_state(direction){
@@ -161,6 +162,10 @@ class Player extends Entity{
 
 	change_rotation_state(rot_direction){
 		this.rot_direction = rot_direction	
+	}
+
+	change_keyboard_state(keyboard){
+		this.keyboard_state = keyboard
 	}
 
 	check_collision({ map, entities }){
@@ -181,6 +186,8 @@ class Player extends Entity{
 		return false;
 	}
 }
+
+
 
 module.exports = {
 	Entity,

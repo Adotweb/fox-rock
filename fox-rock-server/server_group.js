@@ -67,7 +67,7 @@ class ServerGroup{
 			return 
 		}
 		
-		if(this.players == 0){
+		if(this.players == 0 && this.server_list){
 			this.server_list.delete(this.group_id)
 			console.log("i closed because i dont have any players")
 			return
