@@ -4,25 +4,19 @@ let props = $props();
 let decide_mode = props.decide_mode;
 
 
-import Peer from 'peerjs';
 import { onMount } from 'svelte';
 import { connection } from "../state/connection.svelte"
-import { get } from 'svelte/store';
-import App from '../App.svelte';
 
-let peer;
 
 let server_id;
 
-function connect(){
 	
-}
-
+//list of active servers
 let server_list = $state([]);
+
 onMount(() => {
-
+	//get the list of active servers
 	fetch("http://localhost:3000/get_rooms").then(res => res.json())
-
 	.then(res => {
 		server_list = res.rooms;	
 	})
@@ -38,13 +32,11 @@ function choose_server(server_id){
 </script>
 
 
-<div>
-
+<div style="height:100vh;">
+	<h1>List of active servers</h1>
+	<ul>
+		{#each server_list as server_id}
+		{/each}
+	</ul>
 	
-
-	<input type="text" bind:value={server_id}>
-		
-	{#each server_list as server_id}
-		<button onclick={() => choose_server(server_id)}>{server_id}</button>	
-	{/each}	
 </div>

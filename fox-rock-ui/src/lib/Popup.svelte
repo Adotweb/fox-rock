@@ -2,7 +2,7 @@
 //function to change the mode of the window
 export let decide_mode;
 
-
+//functions to click through the first page
 function play_default_server(){
 	decide_mode("play")
 }	

@@ -3,38 +3,44 @@ let props = $props();
 
 let decide_mode = props.decide_mode;
 
-        import { default_server_url } from "../state/config.svelte";
-        import { connection } from "../state/connection.svelte";
+import { default_server_url } from "../state/config.svelte";
+import { connection } from "../state/connection.svelte";
 
-
+//server id to show that is the actual server id
 let created_server_id = $state("");
 
-let server_name = $state("");
+//proposed server id, might be used up
+let server_id = $state("");
+
 
 function create_server(){
-
-	if(server_name == ""){
-		alert("please give the server a name")
+	
+	//check that server name is not empty
+	if(server_id == ""){
+		alert("please give the server an id")
 		return 
 
 	}
 
+	//request to server to create a room with id server_id
 	fetch("http://localhost:3000/create_room", {
 		method : "POST", 
 		body : JSON.stringify({
-			maybe_id : server_name
+			maybe_id : server_id
 		}),
 		headers : {
 			"content-type" : "application/json",
 		}
 	}).then(res => res.json()).then(res => {
-		console.log(res)
+		//check if response is successfull
 		if(res.success){
-
-			if(res.group_id == server_name){
-				alert("created server with id: " + res.path)
+			
+			//if the server id is not taken already we can join this
+			if(res.group_id == server_id){
+				alert("created server with id: " + res.group_id)
 				created_server_id = res.group_id;	
 			}else{	
+				//else we create a unique identifier and connect to it
 				alert("unfortunately your serverid is taken! created server with id: " + res.group_id)
 				created_server_id = res.group_id;	
 			}
@@ -46,9 +52,8 @@ function create_server(){
 
 
 
-function connect(){
-	console.log(default_server_url + created_server_id)		
-	
+function connect(){	
+	//change the mode to "play" and set the server id to use in playing later
 	connection.set(created_server_id)
 
 	decide_mode("play")
@@ -61,19 +66,25 @@ function connect(){
 .link{
 	text-decoration: underline;
 	color : blue;
+	background-color: none;
+	border : none;
+
 }
 
 </style>
 
 <div>
-	<input type="text" placeholder="server name?" bind:value={server_name}>
 
-	
+
 	{#if created_server_id}
 	
-		<div>Go to play on you server <button class="link" onclick={connect}>{created_server_id}</button></div>	
+		<div>Go to play on you server <a class="link" onclick={connect}>{created_server_id}</a></div>	
 
 	{:else}
-		<button onclick={create_server}>Create Server</button>
+		<div>
+			<input type="text" placeholder="proposed server id?" bind:value={server_id}>
+			<button onclick={create_server}>Create Server</button>
+		</div>
+
 	{/if}
 </div>
