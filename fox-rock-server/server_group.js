@@ -3,7 +3,7 @@ const { GameState } = require("./game_state/game_state");
 const crypto = require("crypto")
 
 class ServerGroup{
-	constructor(group_id){
+	constructor(group_id, server_list){
 		this.group_id = group_id || crypto.randomUUID();
 
 		this.connections = new Map();
@@ -11,6 +11,10 @@ class ServerGroup{
 		this.state = new GameState();
 
 		this.last_update = Date.now();
+		
+		this.server_list = server_list
+
+		this.players = 1;
 	}	
 
 	new_connection(socket){
@@ -29,6 +33,8 @@ class ServerGroup{
 		socket.on("close", () => {
 				this.state.player_logout(socket.id);
 				this.connections.delete(socket.id)
+
+				this.players = this.connections.size
 			})
 
 
@@ -57,7 +63,14 @@ class ServerGroup{
 
 		if(now - this.last_update > 5 * 1000 * 60 && this.server_list){
 			this.server_list.delete(this.group_id)
+			console.log("i closed because of inactivity")
 			return 
+		}
+		
+		if(this.players == 0){
+			this.server_list.delete(this.group_id)
+			console.log("i closed because i dont have any players")
+			return
 		}
 
 		this.state.update();

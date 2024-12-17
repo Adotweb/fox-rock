@@ -17,12 +17,10 @@ app.use(cors())
 const wss = new WebSocketServer({ path : "/", server })
 
 
-
 let main_server_group = new ServerGroup("/");
 
 let groups = new Map();
 
-groups.set("/", main_server_group)
 
 wss.on("connection", socket => {
 
@@ -61,6 +59,7 @@ wss.on("connection", socket => {
 const updates_per_second = 40
 
 setInterval(() => {
+	main_server_group.update();
 	[...groups.values()].forEach(group => group.update())
 
 }, 1000/updates_per_second)
@@ -75,9 +74,6 @@ app.get("/get_rooms", (req, res) => {
 
 })
 
-app.post("/delete_room", (req, res) => {
-
-})
 
 app.post("/create_room", (req, res) => {
 	let { maybe_id } = req.body;
@@ -86,12 +82,12 @@ app.post("/create_room", (req, res) => {
 
 	let actual_id = maybe_id;
 	if(!groups.has(maybe_id)){
-		let new_group = new ServerGroup(maybe_id);
+		let new_group = new ServerGroup(maybe_id, groups);
 
 
 		groups.set(maybe_id, new_group)
 	}else {
-		let new_group = new ServerGroup(crypto.randomUUID());
+		let new_group = new ServerGroup(crypto.randomUUID(), groups);
 		groups.set(new_group.group_id, new_group)
 
 		actual_id = new_group.group_id;
