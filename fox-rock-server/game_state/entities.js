@@ -1,7 +1,8 @@
 const {chunk_width, chunk_height, map_offset_x, map_offset_y} = require("../game_config.json")
 
 
-const crypto = require("crypto")
+const crypto = require("crypto");
+const { Pistol } = require("./weapons");
 
 function EntityList(){
 	let list = [];
@@ -156,6 +157,7 @@ class Player extends Entity{
 
 		this.keyboard_state = {}
 
+		this.held_item = new Pistol();
 
 		this.messages = []
 	}
@@ -183,6 +185,9 @@ class Player extends Entity{
 
 	update(update_info){
 		super.update(update_info);
+
+		this.use_held_item(update_info)
+
 
 		if(this.health <= 0){
 			this.health = this.max_health;
@@ -218,6 +223,17 @@ class Player extends Entity{
 			return true
 		}
 
+
+	
+
+		return false;
+	}
+
+
+	use_held_item({ entities }){
+		if(this.keyboard_state.space == 0){
+			this.held_item.release_trigger();
+		}
 		if(this.keyboard_state.space == 1){
 			let candidates = [
 				
@@ -248,13 +264,11 @@ class Player extends Entity{
 				candidates.sort((a, b) => a.distance - b.distance)
 
 				let entity = candidates[0].entity
-
-				entity.health -= 1;
+			
+				let damage_dealth = this.held_item.get_damage_on_trigger();
+				entity.health -= damage_dealth
 			}
 		}	
-	
-
-		return false;
 	}
 }
 
