@@ -1,0 +1,22 @@
+<script>
+
+let map = $state(Array.from({length : 64}))
+
+
+</script>
+
+<style>
+.map-creator-container{
+	background-color: black;
+	width:100vw;
+	height : max-content;
+	flex : 1;
+}
+
+</style>
+
+<div class="map-creator-container">
+	{#each map as cell}
+			
+	{/each}		
+</div>

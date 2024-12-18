@@ -1,10 +1,14 @@
 <script>
+
+import { default_server_url } from "../state/config.svelte";
+import { connection } from "../state/connection.svelte";
+
+import CreateMapPage from "./CreateMapPage.svelte";
+
 let props = $props();
 
 let decide_mode = props.decide_mode;
 
-import { default_server_url } from "../state/config.svelte";
-import { connection } from "../state/connection.svelte";
 
 //server id to show that is the actual server id
 let created_server_id = $state("");
@@ -50,7 +54,7 @@ function create_server(){
 	})
 }
 
-
+let include_map;
 
 function connect(){	
 	//change the mode to "play" and set the server id to use in playing later
@@ -71,9 +75,24 @@ function connect(){
 
 }
 
+.container{
+	height : 100vh;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	.server-name{
+		padding : 20px;
+		> * {
+			font-size: 2em;
+		}
+	}
+}
+
 </style>
 
-<div>
+<div class="container">
 
 
 	{#if created_server_id}
@@ -81,10 +100,19 @@ function connect(){
 		<div>Go to play on you server <button class="link" onclick={connect}>{created_server_id}</button></div>	
 
 	{:else}
-		<div>
+		<div class="server-name">
 			<input type="text" placeholder="proposed server id?" bind:value={server_id}>
 			<button onclick={create_server}>Create Server</button>
 		</div>
+
+		<div class="server-name">	
+			<div>
+				Include own Map<input type="checkbox" bind:checked={include_map}> 
+			</div> 
+		</div>
+
+		
+		<CreateMapPage></CreateMapPage>
 
 	{/if}
 </div>

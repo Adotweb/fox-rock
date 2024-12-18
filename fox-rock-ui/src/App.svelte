@@ -17,7 +17,7 @@ function decide_mode(passed_mode){
 
 </script>
 
-<main>
+<main style="display:flex;justify-content:center">
 	{#if mode == "menu"}	
 		<Popup {decide_mode}></Popup>
 	{/if}

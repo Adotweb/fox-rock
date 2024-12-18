@@ -398,22 +398,26 @@ let deactivate_id = setInterval(() => {
 
 <svelte:window {onkeyup} {onkeydown}></svelte:window>
 
-<div class="health-bar" >
-	<div class="health-bar-row" style="width:{relative_health}%;">
-		<div class="health-display">
-			{health} / {health/(relative_health) * 100}
-		</div>
-	</div>
-</div>
-
 <div class="message-board">
 	{#each messages as message}
 		<div>[{message.time}] {message.text}</div>	
 	{/each}
 </div>
 
+<div class="game-container">
+	<div class="health-bar" >
+		<div class="health-bar-row" style="width:{relative_health}%;">
+			<div class="health-display">
+				{health} / {health/(relative_health) * 100}
+			</div>
+		</div>
+	</div>
+	<canvas class="screen" bind:this={screen} width={w} height={h}></canvas>
+</div>
+
+
+
 <canvas class="mini-map" bind:this={mini_map} width={mini_map_w} height={mini_map_h}></canvas>
 
-<canvas class="screen" bind:this={screen} width={w} height={h}></canvas>
 
 
