@@ -161,6 +161,8 @@ let host_connection_on_message = (proto) => {
 			//load the new chunks 
 			load_chunks(loaded_chunks);
 
+			console.log(loaded_chunks)
+
 
 			load_edges(loaded_chunks, edges, mini_map_squares);
 			
@@ -207,6 +209,11 @@ function onkeydown(e){
 	//abilities and shooting
 	if(e.key == " "){
 		keyboard.space = 1;	
+	}
+	
+	//check if pressed button is a number
+	if(!isNaN(Number(e.key))){
+		keyboard.number = Number(e.key);			
 	}
 }
 

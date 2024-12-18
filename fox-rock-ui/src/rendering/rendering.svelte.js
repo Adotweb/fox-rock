@@ -21,12 +21,11 @@ export function get_chunk(x, y){
 	}else{
 		return
 	}
-	if(world_map[x][y]){
-		
+	try {
 		return world_map[x][y]
-	}else{
-
-	}
+	}catch{
+		return
+	}		
 }
 
 
@@ -62,8 +61,12 @@ export function load_chunks(loaded_chunks) {
                         loaded_chunks.push(chunk_info);
                 }
         }
+	//filter all the chunks that are not existant (theoretically we can overextend the map with the render distance)
+	let filtered_chunks = loaded_chunks.filter(chunk => !!chunk.info)
 
-
+	//since js doesnt allow in place modification of arrays via assignment we need to use this hack...
+	loaded_chunks.length = 0
+	loaded_chunks.push(...filtered_chunks)
 }
 
 //this actually creates all the edges to put into the edge buffer
@@ -72,8 +75,6 @@ export function load_edges(loaded_chunks, edges, mini_map_squares) {
 	let chunk_h = get(global_state).chunk_h;
 
 	let chunk_pos = get(global_state).chunk_pos;
-
-	//we need to move through every chunk in the loaded_chunks
         for (let i = 0; i < loaded_chunks.length; i++) {
 		//since laoded_chunks is a 1d array we have to retrieve the x and y coordiantes of the current chunk declaratively	
 		let render_side = (2 * render_dist + 1);
@@ -103,7 +104,11 @@ export function load_edges(loaded_chunks, edges, mini_map_squares) {
 
 				//to get the chunk_index we use the chunk relative coordinates however
                                 let chunk_index = y * chunk_w + x;
+
+
                                 let chunk_block = map_array[chunk_index];
+
+			
 
 				//id 1 means normal red wall so we set the color = red
 				if(chunk_block == 1){	

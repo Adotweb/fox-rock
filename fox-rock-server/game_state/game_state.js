@@ -1,5 +1,7 @@
 const { Entity, EntityList, Player } = require("./entities")
 
+const {map_size_width, map_size_height} = require("../game_config.json")
+
 let default_map = [
 	1, 1, 1, 0, 0, 1, 1, 1,
 	1, 0, 0, 0, 0, 0, 0, 1, 
@@ -14,7 +16,7 @@ let default_map = [
 class GameState{
 	constructor(){
 		this.entities = EntityList();
-		this.map = Array.from({length : 100}, () => new Array(100).fill(default_map))
+		this.map = Array.from({length : map_size_width}, () => new Array(map_size_height).fill(default_map))
 
 	}
 

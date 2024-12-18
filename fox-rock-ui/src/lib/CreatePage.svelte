@@ -78,7 +78,7 @@ function connect(){
 
 	{#if created_server_id}
 	
-		<div>Go to play on you server <a class="link" onclick={connect}>{created_server_id}</a></div>	
+		<div>Go to play on you server <button class="link" onclick={connect}>{created_server_id}</button></div>	
 
 	{:else}
 		<div>

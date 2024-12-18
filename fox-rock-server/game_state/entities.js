@@ -2,7 +2,7 @@ const {chunk_width, chunk_height, map_offset_x, map_offset_y} = require("../game
 
 
 const crypto = require("crypto");
-const { Pistol } = require("./weapons");
+const { Pistol, HealItem } = require("./weapons");
 
 function EntityList(){
 	let list = [];
@@ -49,7 +49,9 @@ class Entity {
 			Math.floor(this.position[1] / chunk_height)
 		]
 
-		this.chunk_offset = [50, 50]
+		this.chunk_offset = [
+			map_offset_x, map_offset_y
+		]
 
 
 		this.id = crypto.randomUUID();
@@ -157,9 +159,11 @@ class Player extends Entity{
 
 		this.keyboard_state = {}
 
-		this.held_item = new Pistol();
 
 		this.messages = []
+
+		this.inventory = [new Pistol(), new HealItem()];
+		this.inventory_index = 1
 	}
 
 	change_walk_state(direction){
@@ -196,6 +200,10 @@ class Player extends Entity{
 			console.log(this.id, "becuase was shot")
 			this.position = [2, 2]
 		}
+
+		if(this.health > this.max_health){
+			this.health = this.max_health
+		}
 	}
 
 	//player own serialize 
@@ -231,35 +239,17 @@ class Player extends Entity{
 
 	//this method just computes the entities world rotation difference as well as the distance to the player
 	use_held_item({ entities }){
+		if(this.keyboard_state.number && this.keyboard_state.number <= this.inventory.length){
+			this.inventory_index = this.keyboard_state.number || 1
+		}
+		let held_item = this.inventory[this.inventory_index - 1]
+
+
 		if(this.keyboard_state.space == 0){
-			this.held_item.clear_item();
+			held_item.clear_item();
 		}
 		if(this.keyboard_state.space == 1){
-			let candidates = [
-				
-			]
-			entities.forEach(entity => {
-		
-				if(entity.id == this.id) return
-
-				let dir_to_entity = [
-					entity.position[0] - this.position[0],
-					entity.position[1] - this.position[1]
-				]
-
-
-				
-				//compute the rotation based on the direction (flip because of empiricism)
-				let rot_to_entity = -Math.atan2(dir_to_entity[0], dir_to_entity[1])
-
-				let rotation_difference = Math.abs(rot_to_entity - this.rotation)
-		
-				let distance = Math.sqrt(dir_to_entity[0]**2 + dir_to_entity[1]**2)	
-				candidates.push({distance, entity, rotation_difference})
-			})
-			if(candidates.length > 0){
-				this.held_item.apply_item(candidates, this)	
-			}
+			held_item.apply_item(entities, this)
 		}	
 	}
 }
