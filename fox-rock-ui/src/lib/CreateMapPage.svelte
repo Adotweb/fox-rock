@@ -1,12 +1,15 @@
 <script>
 
-let map_size = 32
-//this is going to be the main array were building the map in
-let map = $state(Array.from({length : map_size**2}, () => 0).map((cell_state, index) => ({cell_state, index})))
+let map_size = 32;
 
+//this is going to be the main array were building the map in
+let map_array = new Array(map_size**2).fill(0).map((cell_state, index) => ({cell_state, index}))
+let map = $state(map_array);
 
 function mark_as_cell(index){
-
+	
+	map[index].cell_state = Number(!map[index].cell_state);
+	
 }
 
 </script>
@@ -41,6 +44,6 @@ function mark_as_cell(index){
 	grid-template-rows: repeat({map_size}, 1fr);
 	grid-template-columns: repeat({map_size}, 1fr)">
 	{#each map as cell}
-		<div onclick={() => mark_as_cell(cell.index)}></div>	
+		<div onclick={() => mark_as_cell(cell.index)} style="background-color: {cell.cell_state == 1 ? 'red' : 'white'}"></div>	
 	{/each}		
 </div>

@@ -55,6 +55,7 @@ function create_server(){
 }
 
 let include_map;
+let map_size = 0;
 
 function connect(){	
 	//change the mode to "play" and set the server id to use in playing later
@@ -112,7 +113,7 @@ function connect(){
 		</div>
 
 		
-		<CreateMapPage></CreateMapPage>
+		<CreateMapPage ></CreateMapPage>
 
 	{/if}
 </div>
