@@ -84,7 +84,8 @@ class Entity {
 
 	//update_info holds information about other entities
 	update(update_info){
-
+		//reset messages so they dont hog up bandwith
+		this.messages = [];
 
 
 		let previous_pos = this.position;
@@ -154,6 +155,9 @@ class Player extends Entity{
 		this.rot_speed = 3;
 
 		this.keyboard_state = {}
+
+
+		this.messages = []
 	}
 
 	change_walk_state(direction){
@@ -175,6 +179,28 @@ class Player extends Entity{
 
 	change_keyboard_state(keyboard){
 		this.keyboard_state = keyboard
+	}
+
+	update(update_info){
+		super.update(update_info);
+
+		if(this.health <= 0){
+			this.health = this.max_health;
+
+			this.messages.push({text : `you died and respawned at [${this.position[0]}, ${this.position[1]}]`, time : Date.now()})
+			console.log(this.id, "becuase was shot")
+			this.position = [2, 2]
+		}
+	}
+
+	//player own serialize 
+	serialize(){
+		let primitive_serialization = super.serialize();
+
+		return {
+			...primitive_serialization, 
+			messages : this.messages
+		}
 	}
 
 	check_collision({ map, entities }){

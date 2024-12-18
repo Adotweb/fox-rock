@@ -36,6 +36,10 @@ let send_input;
 //storage variable for the id later
 let player_id;
 
+
+//this is a handle to store messages like "you died" and "you ki**ed someone"
+let messages = $state([])
+
 let create_send_function = () => {
 
 	//when the websocket connection or p2p connection is established we set the sendinput function
@@ -105,6 +109,11 @@ let host_connection_on_message = (proto) => {
 
 		//we need to isolate the player from the entitites in the servers state	
 		let player = data.entities.filter(entity => entity.id == player_id)[0];
+
+		if(player.messages.length > 0){
+			messages.push(player.messages)
+			messages = messages.flat();
+		}
 
 		//set health and relative health
 		health = player.health;	
@@ -367,6 +376,17 @@ let deactivate_id = setInterval(() => {
 	}
 }
 
+.message-board{
+	
+	position: absolute;
+	top: 0px;
+	left : 0px;
+
+	border : 1px solid black;
+	width : 200px;
+	height : 200px;
+}
+
 </style>
 
 <svelte:window {onkeyup} {onkeydown}></svelte:window>
@@ -377,6 +397,12 @@ let deactivate_id = setInterval(() => {
 			{health} / {health/(relative_health) * 100}
 		</div>
 	</div>
+</div>
+
+<div class="message-board">
+	{#each messages as message}
+		<div>[{message.time}] {message.text}</div>	
+	{/each}
 </div>
 
 <canvas class="mini-map" bind:this={mini_map} width={mini_map_w} height={mini_map_h}></canvas>
