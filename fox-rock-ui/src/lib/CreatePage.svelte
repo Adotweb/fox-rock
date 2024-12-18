@@ -26,6 +26,8 @@ function create_server(){
 
 	}
 
+	console.log(map)
+
 	//request to server to create a room with id server_id
 	fetch("http://localhost:3000/create_room", {
 		method : "POST", 
@@ -54,8 +56,15 @@ function create_server(){
 	})
 }
 
-let include_map;
-let map_size = 0;
+//toggle to include own map or not
+let include_map = $state(false);
+
+
+//map size (needs to be multiple of 8)
+let map_size = $state(8)
+
+//provide some handle for the map returned frm the mapcreator
+let map;
 
 function connect(){	
 	//change the mode to "play" and set the server id to use in playing later
@@ -63,6 +72,7 @@ function connect(){
 
 	decide_mode("play")
 }
+
 
 </script>
 
@@ -110,10 +120,18 @@ function connect(){
 			<div>
 				Include own Map<input type="checkbox" bind:checked={include_map}> 
 			</div> 
-		</div>
-
+			{#if include_map}
+				<div>
+					Map Size <input type="number" bind:value={map_size}>
+				</div>
+	
+			{/if}
+			</div>
 		
-		<CreateMapPage ></CreateMapPage>
+		{#if include_map}
+			<CreateMapPage bind:map_size={map_size} bind:definitive_map={map}></CreateMapPage>
+		{/if}
+		
 
 	{/if}
 </div>
