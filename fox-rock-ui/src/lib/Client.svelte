@@ -1,7 +1,8 @@
 <script>
 //function to change the mode of the window
-export let decide_mode;
+let props = $props();
 
+let decide_mode = props.decide_mode;
 
 import { onMount } from "svelte"
 import { entity_rendering_map } from "../rendering/render-entites/entities";
@@ -100,11 +101,14 @@ let host_connection_on_message = (proto) => {
 		.filter(entity => entity.id !== player_id)
 		.map(entity => new entity_rendering_map[entity.name](entity.position, player_pos, rot))
 
-
-
+		
 
 		//we need to isolate the player from the entitites in the servers state	
 		let player = data.entities.filter(entity => entity.id == player_id)[0];
+
+		//set health and relative health
+		health = player.health;	
+		relative_health = player.health/player.max_health * 100
 
 		//now we get the new positions to later check if we have changed (to save time in rendering)
 		let new_chunk_coords = player.chunk_coords;
@@ -162,6 +166,17 @@ let direction = [0, 0];
 let rot_dir = 0;
 //the above two will only ever be sent to the server and have no use for the clients code
 
+//this health is the actual health the player still has
+let health = $state(0)
+
+//this health is relative to the players max health to make div calculations easier
+let relative_health =  $state(100)
+
+//keyboard inputs
+//1 is pressed 0 is not
+let keyboard = {
+	"space" : 0
+}
 
 //input map to overwrite the direction and rot_dir
 function onkeydown(e){
@@ -180,6 +195,10 @@ function onkeydown(e){
 	} if(e.key == "Escape"){
 		decide_mode("menu")
 	}
+	//abilities and shooting
+	if(e.key == " "){
+		keyboard.space = 1;	
+	}
 }
 
 //same here
@@ -196,6 +215,10 @@ function onkeyup(e){
 		rot_dir = 0
 	}if(e.key == "ArrowRight"){
 		rot_dir = 0
+	}
+	//abilities and shooting
+	if(e.key == " "){	
+		keyboard.space = 0;	
 	}
 }
 //game state things
@@ -299,7 +322,8 @@ let deactivate_id = setInterval(() => {
 	//send the player input to the server/p2p-host
 	send_input({
 		direction,
-		rotation : rot_dir
+		rotation : rot_dir,
+		keyboard
 	});
 
 	
@@ -330,10 +354,33 @@ let deactivate_id = setInterval(() => {
 	border : 1px solid black;
 }
 
+.health-bar{
+	position: relative;
+	width : 400px;
+	height : 30px;
+	border : 1px solid black;
+	margin : 4px;
+
+	.health-bar-row{
+		height : 100%;
+		background-color: green;
+	}
+}
+
 </style>
 
 <svelte:window {onkeyup} {onkeydown}></svelte:window>
 
+<div class="health-bar" >
+	<div class="health-bar-row" style="width:{relative_health}%;">
+		<div class="health-display">
+			{health} / {health/(relative_health) * 100}
+		</div>
+	</div>
+</div>
+
 <canvas class="mini-map" bind:this={mini_map} width={mini_map_w} height={mini_map_h}></canvas>
 
 <canvas class="screen" bind:this={screen} width={w} height={h}></canvas>
+
+

@@ -62,6 +62,11 @@ class Entity {
 		this.rot_speed = 0;
 		
 		this.entity_list;
+
+		this.state = "normal"
+
+		this.health = 100;
+		this.max_health = 100;
 	}
 	
 	register_to(entity_list){
@@ -125,7 +130,10 @@ class Entity {
 			rotation : this.rotation,
 			type : this.type,
 			name : this.name,
-			id : this.id
+			id : this.id,
+			health: this.health,
+			max_health : this.max_health,
+			state : this.state
 		}
 	}
 
@@ -144,7 +152,8 @@ class Player extends Entity{
 		this.direction = [0, 0]
 		this.rot_direction = 0
 		this.rot_speed = 3;
-		this.keyboard_state = [];
+
+		this.keyboard_state = {}
 	}
 
 	change_walk_state(direction){
@@ -182,6 +191,42 @@ class Player extends Entity{
 		if(chunk[map_index] == 1){
 			return true
 		}
+
+		if(this.keyboard_state.space == 1){
+			let candidates = [
+				
+			]
+			entities.forEach(entity => {
+		
+				if(entity.id == this.id) return
+
+				let dir_to_entity = [
+					entity.position[0] - this.position[0],
+					entity.position[1] - this.position[1]
+				]
+
+
+				
+				//compute the rotation based on the direction (flip because of empiricism)
+				let rot_to_entity = -Math.atan2(dir_to_entity[0], dir_to_entity[1])
+
+				let rotation_difference = Math.abs(rot_to_entity - this.rotation)
+		
+				//if we are in about 10 degrees of alignment we mark as hit
+				if(rotation_difference < 7 * Math.PI/180){
+					let distance = Math.sqrt(dir_to_entity[0]**2 + dir_to_entity[1]**2)	
+					candidates.push({distance, entity})
+				}
+			})
+			if(candidates.length > 0){
+				candidates.sort((a, b) => a.distance - b.distance)
+
+				let entity = candidates[0].entity
+
+				entity.health -= 1;
+			}
+		}	
+	
 
 		return false;
 	}
