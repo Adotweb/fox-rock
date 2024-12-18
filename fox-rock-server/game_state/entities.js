@@ -229,10 +229,10 @@ class Player extends Entity{
 		return false;
 	}
 
-
+	//this method just computes the entities world rotation difference as well as the distance to the player
 	use_held_item({ entities }){
 		if(this.keyboard_state.space == 0){
-			this.held_item.release_trigger();
+			this.held_item.clear_item();
 		}
 		if(this.keyboard_state.space == 1){
 			let candidates = [
@@ -254,19 +254,11 @@ class Player extends Entity{
 
 				let rotation_difference = Math.abs(rot_to_entity - this.rotation)
 		
-				//if we are in about 10 degrees of alignment we mark as hit
-				if(rotation_difference < 7 * Math.PI/180){
-					let distance = Math.sqrt(dir_to_entity[0]**2 + dir_to_entity[1]**2)	
-					candidates.push({distance, entity})
-				}
+				let distance = Math.sqrt(dir_to_entity[0]**2 + dir_to_entity[1]**2)	
+				candidates.push({distance, entity, rotation_difference})
 			})
 			if(candidates.length > 0){
-				candidates.sort((a, b) => a.distance - b.distance)
-
-				let entity = candidates[0].entity
-			
-				let damage_dealth = this.held_item.get_damage_on_trigger();
-				entity.health -= damage_dealth
+				this.held_item.apply_item(candidates, this)	
 			}
 		}	
 	}
