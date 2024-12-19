@@ -72,6 +72,8 @@ setInterval(() => {
 
 app.get("/get_rooms", (req, res) => {
 
+	console.log([...groups.keys()])
+
 	res.send({
 		success : true, 
 		rooms : [...groups.keys()]
@@ -82,16 +84,26 @@ app.get("/get_rooms", (req, res) => {
 
 app.post("/create_room", (req, res) => {
 	let { maybe_id } = req.body;
+	let map = undefined 
+	let map_size = undefined;
+
+	if(req.body.map_info){
+		map = req.body.map_info.map;
+		map_size = req.body.map_info.map_size
+
+		console.log(map)
+		//res.send({success : false})
+	}
 
 	try {
 		let actual_id = maybe_id;
 		if(!groups.has(maybe_id)){
-			let new_group = new ServerGroup(maybe_id, groups);
+			let new_group = new ServerGroup(maybe_id, groups, map, map_size);
 
 
 			groups.set(maybe_id, new_group)
 		}else {
-			let new_group = new ServerGroup(crypto.randomUUID(), groups);
+			let new_group = new ServerGroup(crypto.randomUUID(), groups, map, map_size);
 			groups.set(new_group.group_id, new_group)
 
 			actual_id = new_group.group_id;

@@ -14,10 +14,14 @@ let server_id;
 //list of active servers
 let server_list = $state([]);
 
+
+
+
 onMount(() => {
 	//get the list of active servers
 	fetch("http://localhost:3000/get_rooms").then(res => res.json())
 	.then(res => {
+		console.log(res.rooms)
 		server_list = res.rooms;	
 	})
 })
@@ -36,6 +40,7 @@ function choose_server(server_id){
 	<h1>List of active servers</h1>
 	<ul>
 		{#each server_list as server_id}
+			<div>{server_id}</div>
 		{/each}
 	</ul>
 	

@@ -17,20 +17,32 @@ $effect(() => {
 
 })
 
+
+let used_map = $state([]);
+
+let mouse_held = false;
+
 function mark_as_cell(index){
+
+	if(!mouse_held){
+		return
+	}
+
 	//whenever a cell is clicked we negate the cell state that it already has
 	//we "flip" the color
 	map[index].cell_state = Number(!map[index].cell_state);
 
 	//also we set the map for the compoennt above
-	definitive_map = create_chunked_map(map);
+	definitive_map = create_chunked_map([...map]);
 }
 
 //this saves the map under an id to a server of JSONbin
 function save_map(){
 	//first we create the chunked map	
 	let chunked_map = create_chunked_map(map)
+	
 
+	console.log(JSON.stringify(chunked_map, null, 4))
 }
 </script>
 
@@ -60,12 +72,14 @@ function save_map(){
 
 </style>
 
+<svelte:window onmousedown={() => mouse_held = true} onmouseup={() => mouse_held = false}></svelte:window>
+
 <button onclick={save_map} style="font-size:1em">Save Map as <strong>{map_id}</strong> <br>(this makes the map browsable!)</button>
 <div class="map-creator-container" style="
 	grid-template-rows: repeat({map_size}, 1fr);
 	grid-template-columns: repeat({map_size}, 1fr)">
 	{#each map as cell}
-		<div onclick={() => mark_as_cell(cell.index)} style="background-color: {cell.cell_state == 1 ? 'red' : 'white'}"></div>	
+		<div onmouseover={() => mark_as_cell(cell.index)} style="background-color: {cell.cell_state == 1 ? 'red' : 'white'}"></div>	
 	{/each}		
 
 

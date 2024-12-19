@@ -14,10 +14,11 @@ let default_map = [
 ]
 
 class GameState{
-	constructor(){
+	constructor(map, map_size){
 		this.entities = EntityList();
-		this.map = Array.from({length : map_size_width}, () => new Array(map_size_height).fill(default_map))
+		this.map = map || Array.from({length : map_size_width}, () => new Array(map_size_height).fill(default_map))
 
+		this.map_size = map_size || [map_size_width, map_size_height]
 	}
 
 

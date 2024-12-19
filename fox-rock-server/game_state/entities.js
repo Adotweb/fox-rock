@@ -223,9 +223,9 @@ class Player extends Entity{
 		ccx = ccx < 0 ? ccx + 8 : ccx
 		ccy = ccy < 0 ? ccy + 8 : ccy
 
-		let map_index = Math.floor(ccx) * 8 + Math.floor(ccy)
+		let map_index = Math.floor(ccy) * 8 + Math.floor(ccx)
 
-		let chunk = map[this.chunk_pos[0] + this.chunk_offset[0]][this.chunk_pos[1] + this.chunk_offset[0]];
+		let chunk = map[this.chunk_pos[0] + this.chunk_offset[0]][this.chunk_pos[1] + this.chunk_offset[1]];
 
 		if(chunk[map_index] == 1){
 			return true

@@ -26,13 +26,18 @@ function create_server(){
 
 	}
 
-	console.log(map)
+	
 
 	//request to server to create a room with id server_id
 	fetch("http://localhost:3000/create_room", {
 		method : "POST", 
 		body : JSON.stringify({
-			maybe_id : server_id
+			maybe_id : server_id,
+			map_info : include_map ? {
+				map,
+				map_size : map_size/8
+			}
+				: undefined
 		}),
 		headers : {
 			"content-type" : "application/json",
@@ -122,7 +127,7 @@ function connect(){
 			</div> 
 			{#if include_map}
 				<div>
-					Map Size <input type="number" bind:value={map_size}>
+					Map Size <input type="number" step="8" bind:value={map_size}>
 				</div>
 	
 			{/if}

@@ -5,12 +5,12 @@ const { map_offset_x, map_offset_y } = require("./game_config.json")
 const crypto = require("crypto")
 
 class ServerGroup{
-	constructor(group_id, server_list){
+	constructor(group_id, server_list, map, map_size){
 		this.group_id = group_id || crypto.randomUUID();
 
 		this.connections = new Map();
 
-		this.state = new GameState();
+		this.state = new GameState(map, map_size);
 
 		this.last_update = Date.now();
 		
@@ -43,7 +43,7 @@ class ServerGroup{
 		socket.send(JSON.stringify({
 			...player_info,
 			world_map : this.state.map,
-			chunk_offset : [map_offset_x, map_offset_y],
+			chunk_offset : [0, 0],
 			player_id : connection_id,
 			type : "initialize",
 		}))
