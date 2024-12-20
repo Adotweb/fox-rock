@@ -117,7 +117,6 @@ class Pistol extends Weapon{
 		}
 
 		this.used = true
-		console.log(this.uses_left)
 		this.uses_left -= 1;
 		
 
