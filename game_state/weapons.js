@@ -91,7 +91,7 @@ class Pistol extends Weapon{
 		this.max_uses = this.max_ammo;
 		this.uses_left = this.ammo;
 
-		this.reload_time = 3000;
+		this.reload_time = 4500;
 		
 	}
 
@@ -135,12 +135,12 @@ class HealItem extends Item{
 		this.uses_left = 1;
 		this.max_uses = 1;
 
-		this.reload_time = 20_000
+		this.reload_time = 15_000
 	}
 
 
 	apply_item(entities, self){	
-		if(this.used || self.health == self.max_health){
+		if(this.used || self.health == self.max_health || this.uses_left <= 0){
 			return
 		}
 

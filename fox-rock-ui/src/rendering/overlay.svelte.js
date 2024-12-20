@@ -5,7 +5,7 @@ import { screen_h, screen_w } from "../state/config.svelte";
 
 let pistol_animation_image = new Image()
 
-pistol_animation_image.src = "./public/pistol_sheet.png";
+pistol_animation_image.src = "./pistol_sheet.png";
 
 
 pistol_animation_image.onload = () => {
