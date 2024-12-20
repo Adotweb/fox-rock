@@ -1,12 +1,16 @@
 <script>
 
-let { map_size = $bindable(16), definitive_map = $bindable(), ...props } = $props();
+let { map_size = $bindable(16), definitive_map = $bindable(), received_maps = $bindable(), ...props } = $props();
+
+
 
 import {create_chunked_map} from "./helpers.svelte"
 
-let map_id = crypto.randomUUID();
+//in case there is no map_name provided
+let map_id = $state(crypto.randomUUID());
 
-
+//the map name when we want to save it as community map
+let map_name = $state();
 
 //this is going to be the main array were building the map in
 let map = $state(new Array(map_size*map_size).fill(0).map((cell_state, index) => ({cell_state, index})));
@@ -17,8 +21,6 @@ $effect(() => {
 
 })
 
-
-let used_map = $state([]);
 
 let mouse_held = false;
 
@@ -37,12 +39,55 @@ function mark_as_cell(index){
 }
 
 //this saves the map under an id to a server of JSONbin
-function save_map(){
+async function save_map(){
 	//first we create the chunked map	
-	let chunked_map = create_chunked_map(map)
-	
 
-	console.log(JSON.stringify(chunked_map, null, 4))
+	if(!map){
+		alert("please dont waste memory")
+		return
+	}
+	console.log(received_maps)
+
+	let chunked_map = create_chunked_map(map)
+
+	let saved_map = await fetch("https://api.jsonbin.io/v3/b", {
+		method : "POST",
+		headers : {
+			"Content-Type" : "application/json",
+			"X-Access-Key": "$2a$10$8XyWRHsCr1WHkjqpZPrnaOfRx5y8LFwIdYJZiwmiamWofr8/4FRo6"
+		}, 
+		body : JSON.stringify({
+			map : chunked_map,
+			map_name : map_name || map_id,
+			map_size
+		})
+	}).then(res => res.json())
+
+	let saved_map_id = saved_map.metadata.id;
+
+	let new_all_maps = {
+		maps : [
+			...received_maps,
+			{
+				map : chunked_map, 
+				map_id : saved_map_id,
+				map_name : map_name || map_id,
+				map_size
+			}
+		]
+	}	
+	
+	//then save new all maps array to the central bin
+	let new_all_map_record = await fetch("https://api.jsonbin.io/v3/b/676538edad19ca34f8de392a", {
+		method : "PUT",
+		headers : {
+			"X-Access-Key" : "$2a$10$8XyWRHsCr1WHkjqpZPrnaOfRx5y8LFwIdYJZiwmiamWofr8/4FRo6",
+			"Content-Type" : "application/json"
+		},
+		body : JSON.stringify(new_all_maps)
+	}).then(res => res.json())
+
+
 }
 </script>
 
@@ -53,8 +98,8 @@ function save_map(){
 
 	height: max-content;
 	padding: 20px;
-
-	flex : 1;
+	
+	aspect-ratio: 1;
 
 	display: grid;
 
@@ -74,7 +119,18 @@ function save_map(){
 
 <svelte:window onmousedown={() => mouse_held = true} onmouseup={() => mouse_held = false}></svelte:window>
 
-<button onclick={save_map} style="font-size:1em">Save Map as <strong>{map_id}</strong> <br>(this makes the map browsable!)</button>
+<div>Map Name? <input type="text" bind:value={map_name}></div>
+
+<br>
+
+<div>
+	Map Size <input type="number" step="8" bind:value={map_size}>
+</div>
+
+<br>
+
+<button onclick={save_map} style="font-size:1em">Save Map as <strong>{map_name || map_id}</strong> <br>(this makes the map browsable!)</button>
+
 <div class="map-creator-container" style="
 	grid-template-rows: repeat({map_size}, 1fr);
 	grid-template-columns: repeat({map_size}, 1fr)">

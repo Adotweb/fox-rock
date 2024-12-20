@@ -1,12 +1,17 @@
 <script>
+    import { onMount } from "svelte";
+
 
 import { default_server_url } from "../state/config.svelte";
 import { connection } from "../state/connection.svelte";
 
+
+import MapPreview from "./MapPreview.svelte";
 import CreateMapPage from "./CreateMapPage.svelte";
 
 let props = $props();
 
+//the funciton to change the decide mode, when the server is crated we want to change to play mode
 let decide_mode = props.decide_mode;
 
 
@@ -25,7 +30,6 @@ function create_server(){
 		return 
 
 	}
-
 	
 
 	//request to server to create a room with id server_id
@@ -69,7 +73,7 @@ let include_map = $state(false);
 let map_size = $state(8)
 
 //provide some handle for the map returned frm the mapcreator
-let map;
+let map = $state();
 
 function connect(){	
 	//change the mode to "play" and set the server id to use in playing later
@@ -78,6 +82,34 @@ function connect(){
 	decide_mode("play")
 }
 
+
+
+let community_maps = $state([])
+let chosen_map = $state()
+onMount(async () => {
+		
+	//get all maps from online database JSONbin	
+	let all_map_record = await fetch("https://api.jsonbin.io/v3/b/676538edad19ca34f8de392a/latest", {
+		method : "GET",
+		headers : {
+			"X-Access-Key" : "$2a$10$8XyWRHsCr1WHkjqpZPrnaOfRx5y8LFwIdYJZiwmiamWofr8/4FRo6"
+		}
+	}).then(res => res.json())
+
+	community_maps = all_map_record.record.maps
+})
+
+function use_community_map(index){
+	//mark the clicked name to be the currently used one
+	chosen_map = index
+
+	//get the clicked map from the commuinty map by index
+	let clicked_map = community_maps[index]
+	map = clicked_map.map;
+	map_size = clicked_map.map_size
+
+	console.log(map, map_size)
+}
 
 </script>
 
@@ -125,18 +157,37 @@ function connect(){
 			<div>
 				Include own Map<input type="checkbox" bind:checked={include_map}> 
 			</div> 
-			{#if include_map}
-				<div>
-					Map Size <input type="number" step="8" bind:value={map_size}>
-				</div>
-	
-			{/if}
-			</div>
+				
+		</div>
 		
 		{#if include_map}
-			<CreateMapPage bind:map_size={map_size} bind:definitive_map={map}></CreateMapPage>
+			<CreateMapPage bind:received_maps={community_maps} bind:map_size={map_size} bind:definitive_map={map}></CreateMapPage>
 		{/if}
 		
-
+		
 	{/if}
+
+	<hr>
+
+	<h1>Community Pages</h1>
+
+
+	<ul>
+		{#each community_maps as map, index}
+			<li onclick={() => use_community_map(index)} style="background-color: {index == chosen_map ? 'red' : 'transparent'}">
+				{map.map_name}
+
+
+				{#if chosen_map == index}
+					<div><MapPreview preview={map.map}></MapPreview></div>	
+				{/if}
+			</li>	
+			
+		{/each}
+
+	</ul>
+
+	<br>
+	
+	
 </div>
