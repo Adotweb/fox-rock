@@ -52,6 +52,9 @@ let create_send_function = () => {
 
 }
 
+
+//everything in here is for updates (updating player state) but not to update the state on the screen 
+//that happens in the main game loop
 let host_connection_on_message = (proto) => {
 
 	
@@ -110,7 +113,8 @@ let host_connection_on_message = (proto) => {
 
 		//we need to isolate the player from the entitites in the servers state	
 		let player = data.entities.filter(entity => entity.id == player_id)[0];
-
+		
+		//we move all the message (death messages to the players message box)
 		if(player.messages.length > 0){
 			messages.push(player.messages)
 			messages = messages.flat();
@@ -166,7 +170,7 @@ let host_connection_on_message = (proto) => {
 			load_chunks(loaded_chunks);
 
 
-
+			//we load the edges in the chunk for rendering
 			load_edges(loaded_chunks, edges, mini_map_squares);
 			
 		}
@@ -319,7 +323,7 @@ let render_order = [];
 let fps = 60
 let deactivate_id = setInterval(() => {
 	
-
+	//return when we dont have a connection
 	if(host_connection.readyState == WebSocket.CLOSED || host_connection.readyState == WebSocket.CLOSING){
 		clearInterval(deactivate_id)
 	}
@@ -437,6 +441,7 @@ let deactivate_id = setInterval(() => {
 	
 	<canvas class="screen" bind:this={screen} width={w} height={h}></canvas>
 </div>
+	
 
 
 

@@ -18,6 +18,7 @@ class RenderEntity{
 		]
 		
 		//then get the relative position along the players z and x axis (camera rotation)
+		//we basically just dot product the difference vector with the view direction vector
 		this.rel_pos = [
 			(player_relative_position[0] * Math.cos(player_rotation) + player_relative_position[1] * Math.sin(player_rotation)),
 			(-player_relative_position[0] * Math.sin(player_rotation) + player_relative_position[1] * Math.cos(player_rotation)),
@@ -37,6 +38,7 @@ class RenderEntity{
 		}
 	}
 
+	//every render entity has its own render method so we can implement rendering for every entity individually
 	render(screen, mini_map){
 
 	}
@@ -45,7 +47,7 @@ class RenderEntity{
 //dummy class (for now)
 class Player extends RenderEntity{
 
-
+	//we render other players as green orbs
 	render(screen, mini_map){
 		this.color = "green"
 		//mini-map dimensions
@@ -59,7 +61,7 @@ class Player extends RenderEntity{
 		let mini_map_y = mmh/2 - mmh/2 * this.rel_pos[1]/10;
 		
 
-		//make a small circle on the mini-map where the enemy is
+		//make a small circle on the mini-map where the entity is
 		mini_map.beginPath();
 		mini_map.arc(mini_map_x, mini_map_y, 5, 0, 2 * Math.PI)
 

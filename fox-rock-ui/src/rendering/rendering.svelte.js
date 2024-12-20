@@ -11,7 +11,6 @@ let h = screen_h;
 //we try to minimze creation of new arrays so we pass in the buffers directly to the below functions so they can be altered in place
 
 //we need to check if the chunk exists before we can access it
-//if it doesnt we create it
 export function get_chunk(x, y){
 
 	let world_map = get(global_state).world_map;
@@ -98,7 +97,7 @@ export function load_edges(loaded_chunks, edges, mini_map_squares) {
 				
 				//here we need the offset to get the "objective positions of the blocks"
 				//we do this to accurately map them to relative positions to the player
-				//the "0, 0" block we start next to when the player is at "1, 1" is not objectively the 0, 0 block if our map is 100x100
+				//the "0, 0" block we start next to when the player is at "1, 1" is not objectively the 0, 0 block if our map is 100x100 for example
                                 let x_u = offset[0] * chunk_w + x;
                                 let y_u = offset[1] * chunk_h + y;
 
@@ -210,18 +209,18 @@ export function load_edges(loaded_chunks, edges, mini_map_squares) {
 //im already pretty inefficent and nlogn is still a bit better than n + nlogn...
 //
 //also we sort by depth of whatever object were passing in
-export function insert_into_sorted_array(sortedArray, value) {
+export function insert_into_sorted_array(sorted_array, value) {
         let left = 0;
-        let right = sortedArray.length - 1;
+        let right = sorted_array.length - 1;
 
-        // Perform binary search to find the insertion point
+        //perform binary search to find the insertion point
         while (left <= right) {
                 const mid = Math.floor((left + right) / 2);
-                if (sortedArray[mid].depth === value.depth) {
-                        // If the value already exists, insert it at the same position
+                if (sorted_array[mid].depth === value.depth) {
+                        //if the value already exists, insert it at the same position
                         left = mid;
                         break;
-                } else if (sortedArray[mid].depth <= value.depth) {
+                } else if (sorted_array[mid].depth <= value.depth) {
                         left = mid + 1;
                 } else {
                         right = mid - 1;
@@ -230,7 +229,7 @@ export function insert_into_sorted_array(sortedArray, value) {
 
         // Insert the value at the found position2
 	// we do this inplace
-        sortedArray.splice(left, 0, value);
+        sorted_array.splice(left, 0, value);
 }
 
 
@@ -260,6 +259,8 @@ export function prepare_edges(edges, render_order){
                 let [x_l, z_l] = [lx * csx + ly * snx, lx * -snx + csx * ly];
                 let [x_r, z_r] = [rx * csx + ry * snx, rx * -snx + csx * ry];
 
+		//the below is done to clip walls that have one edge behind the player, 
+		//otherwise we have really weird renderedwalls with negative height...
                 const near = 0.1; //small positive value to avoid clipping at z = 0
                 if (z_l < near && z_r < near) {
                         //both points are behind the near plane, discard edge
@@ -292,6 +293,7 @@ export function prepare_edges(edges, render_order){
 		//between the player and the two points that make up an edge
                 let depth = (z_l + z_r) / 2;
 
+		//this gives the two points for a single edge (l and r)
                 let data = [x_l, x_r, z_l, z_r];
 
 
@@ -367,12 +369,14 @@ export function render_buffer(ctx, mini_map_ctx, render_order) {
 //mini map rendering 
 //this renders every mini-map sqaure in the mini_map render_buffer
 export function render_mini_map(mini_map_squares, mini_map_ctx){
-
+	
+	//we clear the mini map so we can draw to it
 	mini_map_ctx.clearRect(0, 0, mini_map_w, mini_map_h)
 
+	//we render every square (representing a wall block)
 	mini_map_squares.forEach(square => mini_map_square(mini_map_ctx, square))	
 
-
+	//this draw a green point in the middle of the screen (representing the player)
 	mini_map_ctx.beginPath();
   	mini_map_ctx.arc(mini_map_w/2, mini_map_h/2, 5, 0, 2 * Math.PI, true);
   	mini_map_ctx.fillStyle = "green"
@@ -400,13 +404,16 @@ export function mini_map_square(mini_map_ctx, square){
 			rel_x * -snx + rel_y * csx
 		]
 
-
+		//these are the points on the mini map 
+		//already accounted for clip space to screen space
 		return [sz/10 * mini_map_w/2 + mini_map_w/2, -sx/10 * mini_map_w/2 + mini_map_w/2]	
 	})
 
 	//and then we use these points to draw a square to the minimap
 	let [p1, p2, p3, p4] = square;
 
+
+	//this just draws a square
 	mini_map_ctx.beginPath();
 
 	mini_map_ctx.moveTo(...p1)

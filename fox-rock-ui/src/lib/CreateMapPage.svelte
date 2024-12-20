@@ -56,7 +56,6 @@ async function save_map(){
 		alert("please dont waste memory")
 		return
 	}
-	console.log(received_maps)
 
 	let chunked_map = create_chunked_map(map)
 
