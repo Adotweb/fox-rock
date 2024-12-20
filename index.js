@@ -11,6 +11,8 @@ const { ServerGroup } = require("./server_group");
 
 app.use(express.json())
 
+app.use(express.static(__dirname + "/dist"))
+
 app.use(cors())
 
 
