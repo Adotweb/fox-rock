@@ -33,7 +33,7 @@ function create_server(){
 	
 
 	//request to server to create a room with id server_id
-	fetch("http://localhost:3000/create_room", {
+	fetch("https://localhost-njg5.onrender.com/create_room", {
 		method : "POST", 
 		body : JSON.stringify({
 			maybe_id : server_id,

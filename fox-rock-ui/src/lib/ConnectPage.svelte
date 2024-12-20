@@ -19,7 +19,7 @@ let server_list = $state([]);
 
 onMount(() => {
 	//get the list of active servers
-	fetch("http://localhost:3000/get_rooms").then(res => res.json())
+	fetch("https://localhost-njg5.onrender.com/get_rooms").then(res => res.json())
 	.then(res => {
 		console.log(res.rooms)
 		server_list = res.rooms;	
