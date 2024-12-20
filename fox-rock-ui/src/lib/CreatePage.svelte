@@ -175,8 +175,8 @@ function use_community_map(index){
 
 	<h1>Community Pages</h1>
 
-
-	<ul>
+	{#if community_maps.length > 0}
+		<ul>
 		{#each community_maps as map, index}
 			<div onclick={() => use_community_map(index)} style="background-color: {index == chosen_map ? 'red' : 'transparent'}">
 				<h3>{map.map_name}</h3>
@@ -191,6 +191,12 @@ function use_community_map(index){
 	</ul>
 
 	<br>
+
+	{:else}
+		<div>Loading Community Maps</div>
+	{/if}
+	
+
 	{/if}
 		
 

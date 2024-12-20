@@ -40,7 +40,7 @@ function choose_server(server_id){
 	<h1>List of active servers</h1>
 	<ul>
 		{#each server_list as server_id}
-			<div>{server_id}</div>
+			<a onclick={() => choose_server(server_id)}>{server_id}</a>
 		{/each}
 	</ul>
 	
