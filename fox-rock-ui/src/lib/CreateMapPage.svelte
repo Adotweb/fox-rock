@@ -22,14 +22,24 @@ $effect(() => {
 })
 
 
+//this stuff is for when the mouse is held
 let mouse_held = false;
 
+//for some reason - and i have no explanation why that is - holding down doesnt work when trying to delete cells
+//adding them works just fine (except for when you failed to delete by holding just before)
+//and clicking also works
+//this problem could not be resolved by any efforts
 function mark_as_cell(index){
 
 	if(!mouse_held){
 		return
 	}
+	flip_cell(index)
+}
 
+
+//this is to flip singular cells
+function flip_cell(index){
 	//whenever a cell is clicked we negate the cell state that it already has
 	//we "flip" the color
 	map[index].cell_state = Number(!map[index].cell_state);
@@ -88,6 +98,11 @@ async function save_map(){
 	}).then(res => res.json())
 
 
+	//after we successfully saved we give feed back to the player and reload the page
+
+
+	alert(`your mape ${map_name || map_id} was successfully saved as a community map`)
+
 }
 </script>
 
@@ -129,13 +144,13 @@ async function save_map(){
 
 <br>
 
-<button onclick={save_map} style="font-size:1em">Save Map as <strong>{map_name || map_id}</strong> <br>(this makes the map browsable!)</button>
+<button onclick={save_map} style="font-size:1em">Save Map as <strong>{map_name || map_id}</strong> <br>(not needed, you can play the map without saving)</button>
 
 <div class="map-creator-container" style="
 	grid-template-rows: repeat({map_size}, 1fr);
 	grid-template-columns: repeat({map_size}, 1fr)">
 	{#each map as cell}
-		<div onmouseover={() => mark_as_cell(cell.index)} style="background-color: {cell.cell_state == 1 ? 'red' : 'white'}"></div>	
+		<div onmousedown={() => flip_cell(cell.index)} onmouseover={() => mark_as_cell(cell.index)} style="background-color: {cell.cell_state == 1 ? 'red' : 'white'}"></div>	
 	{/each}		
 
 

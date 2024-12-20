@@ -45,7 +45,6 @@ export function create_chunked_map(map){
 	})
 
 
-	console.log(chunked_map)
 	return chunked_map
 }
 

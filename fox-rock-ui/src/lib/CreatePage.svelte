@@ -37,7 +37,8 @@ function create_server(){
 		method : "POST", 
 		body : JSON.stringify({
 			maybe_id : server_id,
-			map_info : include_map ? {
+			//the map can either be community or self made else the server will use the default map
+			map_info : (include_map || chosen_map !== undefined) ? {
 				map,
 				map_size : map_size/8
 			}
@@ -54,15 +55,18 @@ function create_server(){
 			if(res.group_id == server_id){
 				alert("created server with id: " + res.group_id)
 				created_server_id = res.group_id;	
+				connect()
 			}else{	
 				//else we create a unique identifier and connect to it
 				alert("unfortunately your serverid is taken! created server with id: " + res.group_id)
 				created_server_id = res.group_id;	
+				connect()
 			}
 
 		}
 
 	})
+
 }
 
 //toggle to include own map or not
@@ -143,14 +147,13 @@ function use_community_map(index){
 <div class="container">
 
 
-	{#if created_server_id}
 	
-		<div>Go to play on you server <button class="link" onclick={connect}>{created_server_id}</button></div>	
+			
 
-	{:else}
-		<div class="server-name">
+
+	<div class="server-name">
 			<input type="text" placeholder="proposed server id?" bind:value={server_id}>
-			<button onclick={create_server}>Create Server</button>
+			<button onclick={create_server}>Create Server + Play</button>
 		</div>
 
 		<div class="server-name">	
@@ -159,13 +162,14 @@ function use_community_map(index){
 			</div> 
 				
 		</div>
+	
 		
 		{#if include_map}
 			<CreateMapPage bind:received_maps={community_maps} bind:map_size={map_size} bind:definitive_map={map}></CreateMapPage>
-		{/if}
 		
+
+		{:else}
 		
-	{/if}
 
 	<hr>
 
@@ -174,20 +178,22 @@ function use_community_map(index){
 
 	<ul>
 		{#each community_maps as map, index}
-			<li onclick={() => use_community_map(index)} style="background-color: {index == chosen_map ? 'red' : 'transparent'}">
-				{map.map_name}
+			<div onclick={() => use_community_map(index)} style="background-color: {index == chosen_map ? 'red' : 'transparent'}">
+				<h3>{map.map_name}</h3>
 
 
-				{#if chosen_map == index}
-					<div><MapPreview preview={map.map}></MapPreview></div>	
-				{/if}
-			</li>	
+				<div><MapPreview preview={map.map}></MapPreview></div>	
+			</div>		
 			
+			<hr style="height:1px;background-color:black;">
 		{/each}
 
 	</ul>
 
 	<br>
+	{/if}
+		
+
 	
 	
 </div>
