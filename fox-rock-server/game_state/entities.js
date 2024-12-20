@@ -137,7 +137,7 @@ class Entity {
 			id : this.id,
 			health: this.health,
 			max_health : this.max_health,
-			state : this.state
+			state : this.state,
 		}
 	}
 
@@ -197,22 +197,27 @@ class Player extends Entity{
 			this.health = this.max_health;
 
 			this.messages.push({text : `you died and respawned at [${this.position[0]}, ${this.position[1]}]`, time : Date.now()})
-			console.log(this.id, "becuase was shot")
 			this.position = [2, 2]
 		}
 
 		if(this.health > this.max_health){
 			this.health = this.max_health
 		}
+
+		this.inventory.forEach(item => item.update_reloading_state(Date.now()))
 	}
 
 	//player own serialize 
 	serialize(){
 		let primitive_serialization = super.serialize();
-
 		return {
 			...primitive_serialization, 
-			messages : this.messages
+			messages : this.messages,
+			current_item : {
+				name : this.inventory[this.inventory_index - 1].name,
+				uses : this.inventory[this.inventory_index - 1].uses_left,
+				reloaded_in : this.inventory[this.inventory_index - 1].reloaded_in
+			}
 		}
 	}
 

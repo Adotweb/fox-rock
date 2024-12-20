@@ -3,14 +3,14 @@ const { Entity, EntityList, Player } = require("./entities")
 const {map_size_width, map_size_height} = require("../game_config.json")
 
 let default_map = [
-	1, 1, 1, 0, 0, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1,
 	1, 0, 0, 0, 0, 0, 0, 1, 
 	1, 0, 0, 0, 0, 0, 0, 1, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
 	1, 0, 0, 0, 0, 0, 0, 1, 
 	1, 0, 0, 0, 0, 0, 0, 1, 
-	1, 1, 1, 0, 0, 1, 1, 1, 
+	1, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0, 0, 0, 0, 0, 0, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
 ]
 
 class GameState{

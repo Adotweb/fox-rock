@@ -3,6 +3,14 @@ class Item{
 		this.used = false;
 
 		this.spammable = false;
+
+		this.max_uses = 1;
+		this.uses_left = 1;
+		this.last_update = 0;
+		//in milliseconds
+		this.reload_time = 0;
+		//in milliseconds as well
+		this.reloaded_in = 0;
 	}
 
 	create_candidates(entities, self){
@@ -31,6 +39,26 @@ class Item{
 		return candidates
 	}	
 
+
+	update_reloading_state(now){
+		if(this.uses_left >= 1){
+			return
+		}
+		if(this.last_update == 0){
+			this.last_update = now;
+			return
+		}
+
+		if(now - this.last_update < this.reload_time){
+			this.reloaded_in = this.reload_time - (now - this.last_update);
+
+			return
+		}
+
+		this.last_update = 0;
+		this.uses_left = this.max_uses
+	}
+
 	//actually applies the effect of the item to every entit
 	apply_item(candidates, self){
 		used = true;				
@@ -51,12 +79,20 @@ class Weapon extends Item{
 class Pistol extends Weapon{
 	constructor(){
 		super();
-		this.max_ammo = 1000;
-		this.ammo = 1000;
+		this.max_ammo = 10;
+		this.ammo = 10;
 
 		this.damage = 9;
 
 		this.auto = false;	
+
+		this.name = "pistol"
+		
+		this.max_uses = this.max_ammo;
+		this.uses_left = this.ammo;
+
+		this.reload_time = 3000;
+		
 	}
 
 
@@ -64,7 +100,8 @@ class Pistol extends Weapon{
 		
 		entities = super.create_candidates(entities, self)
 
-		if(this.used){
+
+		if(this.used || this.uses_left <= 0){
 			return 
 		}
 
@@ -79,8 +116,11 @@ class Pistol extends Weapon{
 
 		}
 
-	
 		this.used = true
+		console.log(this.uses_left)
+		this.uses_left -= 1;
+		
+
 	}
 
 	clear_item(){
@@ -91,18 +131,26 @@ class Pistol extends Weapon{
 class HealItem extends Item{
 	constructor(){
 		super();
+		this.name = "heal"
+
+		this.uses_left = 1;
+		this.max_uses = 1;
+
+		this.reload_time = 20_000
 	}
 
 
 	apply_item(entities, self){	
-		if(this.used){
+		if(this.used || self.health == self.max_health){
 			return
 		}
 
-
+		
 		self.health += 20;
 
 		this.used = true;
+
+		this.uses_left -= 1;
 	}
 
 

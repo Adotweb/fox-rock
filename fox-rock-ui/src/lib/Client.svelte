@@ -116,8 +116,11 @@ let host_connection_on_message = (proto) => {
 		}
 
 		//set health and relative health
+		//also other state depending stuff
 		health = player.health;	
 		relative_health = player.health/player.max_health * 100
+
+		current_item = player.current_item
 
 		//now we get the new positions to later check if we have changed (to save time in rendering)
 		let new_chunk_coords = player.chunk_coords;
@@ -181,6 +184,9 @@ let health = $state(0)
 
 //this health is relative to the players max health to make div calculations easier
 let relative_health =  $state(100)
+
+//this is just a text showing the current item name
+let current_item = $state("pistol")
 
 //keyboard inputs
 //1 is pressed 0 is not
@@ -369,6 +375,11 @@ let deactivate_id = setInterval(() => {
 	border : 1px solid black;
 }
 
+.top-bar{
+	display:flex; 
+	gap : 10px;
+}
+
 .health-bar{
 	position: relative;
 	width : 400px;
@@ -397,13 +408,10 @@ let deactivate_id = setInterval(() => {
 
 <svelte:window {onkeyup} {onkeydown}></svelte:window>
 
-<div class="message-board">
-	{#each messages as message}
-		<div>[{message.time}] {message.text}</div>	
-	{/each}
-</div>
 
 <div class="game-container">
+	
+	<div class="top-bar">
 	<div class="health-bar" >
 		<div class="health-bar-row" style="width:{relative_health}%;">
 			<div class="health-display">
@@ -411,6 +419,15 @@ let deactivate_id = setInterval(() => {
 			</div>
 		</div>
 	</div>
+
+	<div class="current-item">
+		<div>Currently held item | Uses | Reloaded In</div>
+		<div>
+		 	{current_item.name} | {current_item.uses} | {Math.floor(current_item.reloaded_in/100)/10 || 0}
+		</div>
+	</div>
+	</div>
+	
 	<canvas class="screen" bind:this={screen} width={w} height={h}></canvas>
 </div>
 
@@ -420,3 +437,8 @@ let deactivate_id = setInterval(() => {
 
 
 
+<div class="message-board">
+	{#each messages as message}
+		<div>[{message.time}] {message.text}</div>	
+	{/each}
+</div>
