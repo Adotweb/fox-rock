@@ -128,6 +128,6 @@ setInterval(() => {
     heapUsed: `${(memoryUsage.heapUsed / 1024 / 1024).toFixed(2)} MB`, // Actual memory used on the heap
     external: `${(memoryUsage.external / 1024 / 1024).toFixed(2)} MB`, // Memory for C++ objects
   });
-}, 1000);
+}, 30000);
 
 server.listen(process.env.PORT || 3000)
