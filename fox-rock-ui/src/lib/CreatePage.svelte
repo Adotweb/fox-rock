@@ -33,7 +33,7 @@ function create_server(){
 	
 
 	//request to server to create a room with id server_id
-	fetch(default_server_url, {
+	fetch(default_server_url + "/create_room", {
 		method : "POST", 
 		body : JSON.stringify({
 			maybe_id : server_id,

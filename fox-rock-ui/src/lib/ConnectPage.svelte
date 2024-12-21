@@ -18,7 +18,7 @@ let server_list = $state([]);
 
 onMount(() => {
 	//get the list of active servers
-	fetch(default_server_url).then(res => res.json())
+	fetch(default_server_url + "/get_rooms").then(res => res.json())
 	.then(res => {
 		console.log(res.rooms)
 		server_list = res.rooms;	
