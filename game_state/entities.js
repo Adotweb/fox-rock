@@ -97,6 +97,14 @@ class Entity {
 		let previous_chunk_coords = this.chunk_coords;
 
 		this.rotation += -this.rot_direction * this.rot_speed * Math.PI/180
+
+		//get the rotation in sync again
+		//basically we just reduce by 2PI to get back to the 0 - 2PI cycle
+		if(this.rotation >= 2 * Math.PI){
+			this.rotation -= 2 * Math.PI
+		}	
+
+
 		this.position = [
 			this.position[0] + this.direction[0] ,
 			this.position[1] + this.direction[1] 

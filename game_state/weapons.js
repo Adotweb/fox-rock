@@ -32,9 +32,11 @@ class Item{
 			let rot_to_entity = -Math.atan2(dir_to_entity[0], dir_to_entity[1])
 
 			let rotation_difference = Math.abs(rot_to_entity - self.rotation)
-		
+			
+
 			let distance = Math.sqrt(dir_to_entity[0]**2 + dir_to_entity[1]**2)	
 			candidates.push({distance, entity, rotation_difference})
+
 		})
 		return candidates
 	}	

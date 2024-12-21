@@ -25,7 +25,6 @@ let groups = new Map();
 
 
 wss.on("connection", socket => {
-
 	socket.first_connection = true;
 	
 	socket.on("message", proto => {

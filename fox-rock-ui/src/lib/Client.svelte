@@ -12,11 +12,11 @@ import { global_state } from "../state/global.svelte"
     import { get } from "svelte/store";
     import { connection } from "../state/connection.svelte";
 
-import { default_server_url } from "../state/config.svelte"
+import { websocket_url } from "../state/config.svelte"
 import {  render_pistol_idle, render_pistol_shooting } from "../rendering/overlay.svelte";
 
 
-let host_connection = new WebSocket(default_server_url);
+let host_connection = new WebSocket(websocket_url);
 
 
 

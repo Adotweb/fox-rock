@@ -33,7 +33,7 @@ function create_server(){
 	
 
 	//request to server to create a room with id server_id
-	fetch("https://localhost-njg5.onrender.com/create_room", {
+	fetch(default_server_url, {
 		method : "POST", 
 		body : JSON.stringify({
 			maybe_id : server_id,
@@ -86,7 +86,7 @@ function connect(){
 	decide_mode("play")
 }
 
-
+console.log(default_server_url)
 
 let community_maps = $state([])
 let chosen_map = $state()

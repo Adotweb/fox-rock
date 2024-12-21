@@ -6,9 +6,9 @@ let decide_mode = props.decide_mode;
 
 import { onMount } from 'svelte';
 import { connection } from "../state/connection.svelte"
+        import { default_server_url } from '../state/config.svelte';
 
 
-let server_id;
 
 	
 //list of active servers
@@ -16,10 +16,9 @@ let server_list = $state([]);
 
 
 
-
 onMount(() => {
 	//get the list of active servers
-	fetch("https://localhost-njg5.onrender.com/get_rooms").then(res => res.json())
+	fetch(default_server_url).then(res => res.json())
 	.then(res => {
 		console.log(res.rooms)
 		server_list = res.rooms;	
