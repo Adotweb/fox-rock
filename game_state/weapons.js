@@ -13,7 +13,7 @@ class Item{
 		this.reloaded_in = 0;
 	}
 
-	create_candidates(entities, self){
+	create_candidates({entities, map}, self){
 		let candidates = [
 				
 		]

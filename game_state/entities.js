@@ -251,7 +251,7 @@ class Player extends Entity{
 	}
 
 	//this method just computes the entities world rotation difference as well as the distance to the player
-	use_held_item({ entities }){
+	use_held_item({ entities, map}){
 		if(this.keyboard_state.number && this.keyboard_state.number <= this.inventory.length){
 			this.inventory_index = this.keyboard_state.number || 1
 		}
@@ -262,7 +262,7 @@ class Player extends Entity{
 			held_item.clear_item();
 		}
 		if(this.keyboard_state.space == 1){
-			held_item.apply_item(entities, this)
+			held_item.apply_item({entities, map}, this)
 		}	
 	}
 }
