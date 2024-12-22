@@ -208,6 +208,18 @@ class Pistol extends Weapon{
 	}
 }
 
+class ElectroHands extends Weapon{
+	constructor(){ 
+		super();
+
+		this.name = "electrohands";
+
+		this.uses_left = 3;
+		this.max_uses = 3;
+		this.reload_time = 10_000;
+	}
+}
+
 class HealItem extends Item{
 	constructor(){
 		super();

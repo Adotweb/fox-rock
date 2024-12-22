@@ -13,7 +13,7 @@ import { global_state } from "../state/global.svelte"
     import { connection } from "../state/connection.svelte";
 
 import { websocket_url } from "../state/config.svelte"
-import {  render_pistol_idle, render_pistol_shooting } from "../rendering/overlay.svelte";
+import {  render_medkit_unused, render_medkit_used, render_pistol_idle, render_pistol_shooting } from "../rendering/overlay.svelte";
 
 
 let host_connection = new WebSocket(websocket_url);
@@ -358,12 +358,21 @@ let deactivate_id = setInterval(() => {
 
 	//render the 3d edges, entities and entity points to the mini-map
 	render_buffer(ctx, mini_map_ctx, render_order)
-
-	if(keyboard.space){
-		render_pistol_shooting(ctx)
-	}else {
-		render_pistol_idle(ctx)
+	if(current_item.name == "heal"){
+		if(current_item.uses > 0){
+			render_medkit_unused(ctx)
+		}else {
+			render_medkit_used(ctx)
+		}
 	}
+	if(current_item.name == "pistol"){
+		if(keyboard.space){
+			render_pistol_shooting(ctx)
+		}else {
+			render_pistol_idle(ctx)
+		}
+	}
+	
 
 }, 1000/fps)
 
